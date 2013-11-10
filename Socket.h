@@ -28,6 +28,7 @@ class Socket
         bool registerEventListener(SocketEventListener* listener);
         bool unregisterEventListener();
         int disconnect();
+        int getHostDNS(char* host);
         //static void* send_thread_main(void* args);
         //static void* receive_thread_main(void* args);
     protected:
@@ -64,6 +65,7 @@ class Socket
 
         SendThread m_send_thread;
         ReceiveThread m_receive_thread;
+        char m_host[SOCKET_MAX_BUFFER_SIZE];
 
 
         SocketEventListener* m_event_listener;

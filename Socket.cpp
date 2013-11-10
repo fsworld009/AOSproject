@@ -16,6 +16,7 @@ Socket::Socket(): m_send_thread(this), m_receive_thread(this)
     //ctor
     m_socket = -1;
     m_event_listener = 0;
+    m_host[0]='\0';
 
 }
 
@@ -57,13 +58,19 @@ int Socket::connectHost(char* host,int port){
         cout << "Socket: socket connect error" << endl;
         return 0;
     }else{
-        cout <<"Succeed" << endl;
+        cout <<"Socket: connected to" << host << endl;
+        strcpy(m_host,host);
         if(m_event_listener != 0){
             m_event_listener->onConnect(this);
         }
         createThreads();
         return 1;
     }
+}
+
+int Socket::getHostDNS(char* host){
+    strcpy(host,m_host);
+    return 0;
 }
 
 int Socket::createThreads(){
