@@ -58,7 +58,9 @@ int Socket::connectHost(char* host,int port){
         return 0;
     }else{
         cout <<"Succeed" << endl;
-
+        if(m_event_listener != 0){
+            m_event_listener->onConnect(this);
+        }
         createThreads();
         return 1;
     }
@@ -195,7 +197,9 @@ int Socket::ReceiveThread::run(){
 
 
         if(m_parent->m_event_listener != 0){
-            m_parent->m_event_listener->onReceive(m_parent->m_buffer,m_parent);
+            char* temp = new char[SOCKET_MAX_BUFFER_SIZE];
+            strcpy(temp,m_parent->m_buffer);
+            m_parent->m_event_listener->onReceive(temp,m_parent);   //event listener is responsible of memory management of temp char[]
         }
         usleep(100);
     }

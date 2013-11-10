@@ -13,7 +13,7 @@ class SocketEventListener
     public:
         SocketEventListener();
         virtual ~SocketEventListener();
-        int virtual onConnect();
+        int virtual onConnect(Socket* socket);
         int virtual onReceive(char* message,Socket* socket);
         int virtual onDisconnect(Socket* socket);
 
