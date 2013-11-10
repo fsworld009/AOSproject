@@ -1,41 +1,45 @@
 #include "NodeNetwork.h"
 #include <stdio.h>
 
-//mode 0= without switches
-//mode 1 = work with switches
+
 
 NodeNetwork::NodeNetwork(Node* node): m_node(node)
 {
     //ctor
     m_sockets=0;
     m_socket=0;
+
+    m_port=0;
+    m_num_of_nodes=0;
+
+
+    //mode 0= without switches
+    //mode 1 = work with switches
+    m_mode=0;
 }
 
-NodeNetwork::NodeNetwork()
-{
-    //ctor
 
-}
 
 
 int NodeNetwork::init(){
     //parse config file
-    FILE* fp = fopen("socket","r");
-
-    fscanf(fp,"%d",&m_mode);
-    fscanf(fp,"%d",&m_port);
-    fscanf(fp,"%d",&m_num_of_nodes);
-
-
-    m_netid = new int[m_num_of_nodes];
-
-    printf("mode=%d port=%d num_of_nodes=%d\n",m_mode,m_port,m_num_of_nodes);
 
     //parse config file end
     //m_server_socket.init()
+    printf("adsa%d",m_mode);
 
     if(m_mode==0){
-        //work without switch
+            //work without switch
+        FILE* fp = fopen("socket","r");
+
+        fscanf(fp,"%d",&m_port);
+        fscanf(fp,"%d",&m_num_of_nodes);
+
+
+        m_netid = new int[m_num_of_nodes];
+
+        printf("mode=%d port=%d num_of_nodes=%d\n",m_mode,m_port,m_num_of_nodes);
+
         m_sockets = new Socket*[m_num_of_nodes];
 
         for(int i=0;i<m_num_of_nodes;i++){
@@ -46,13 +50,15 @@ int NodeNetwork::init(){
         m_server_socket.init(m_port);
         m_server_socket.registerEventListener(this);
         m_server_socket.start();
+
+        fclose(fp);
     }else{
         //work with switch
         m_socket = new Socket();
         //config this socket to connect to switch
     }
 
-    fclose(fp);
+
     return 0;
 }
 

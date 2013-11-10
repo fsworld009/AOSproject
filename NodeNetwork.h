@@ -11,7 +11,6 @@ class NodeNetwork: public ServerSocketEventListener, SocketEventListener
 {
     public:
         NodeNetwork(Node* node);
-        NodeNetwork();
         int start();
 
         int send(int from, int to, int timestamp, char* message);
