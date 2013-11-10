@@ -66,7 +66,7 @@ int NodeNetwork::init(){
 
 int NodeNetwork::send(int from, int to, int timestamp, char* message){
     char buff[SOCKET_MAX_BUFFER_SIZE];
-    sprintf(buff,"%c%c%4c%s",(char)from,(char)to,timestamp,message);
+    sprintf(buff,"%c%c%4c%s",(char)to,(char)from,timestamp,message);
 
     //Shift offset by -1
     from = from-1;
@@ -159,7 +159,7 @@ int NodeNetwork::onConnect(Socket* socket){
     return 0;
 }
 int NodeNetwork::onReceive(char* message,Socket* socket){
-    int from, to, timestamp;
+    int to, from, timestamp;
     from = (int)message[0];
     to = (int)message[1];
     timestamp = (int) ((message[2]<<3)|(message[3]<<2)|(message[4]<<1)|(message[5]));
