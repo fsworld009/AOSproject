@@ -1,6 +1,9 @@
 #include "NodeNetwork.h"
 #include <stdio.h>
 
+//mode 0= without switches
+//mode 1 = work with switches
+
 NodeNetwork::NodeNetwork(Node* node): m_node(node)
 {
     //ctor
@@ -53,15 +56,33 @@ int NodeNetwork::init(){
     return 0;
 }
 
+
+
 int NodeNetwork::send(int from, int to, int timestamp, char* message){
     //Shift offset by -1
     from = from-1;
     to = to-1;
     char buff[SOCKET_MAX_BUFFER_SIZE];
-    sprintf(buff,"%c%c%d%s",from,to,timestamp,message);
+    sprintf(buff,"%c%c%d%s",(char)from,(char)to,timestamp,message);
 
     if(m_mode==0){
         //find socket to send
+        if(m_sockets[to] == 0){
+            m_sockets[to] = new Socket();
+
+            char host[20];
+
+            if(m_netid[to]<10){
+                sprintf(host,"net0%d.utdallas.edu",m_netid[to]);
+            }else{
+                sprintf(host,"net%d.utdallas.edu",m_netid[to]);
+            }
+
+            m_sockets[to]->registerEventListener(this);
+            m_sockets[to]->connectHost(host,m_port);
+
+        }
+        m_sockets[to]->send(buff);
     }else{
         //send to switch
         //m_socket->send(buff);
@@ -103,7 +124,13 @@ int NodeNetwork::onConnect(Socket* socket){
 int NodeNetwork::onReceive(char* message,Socket* socket){
     int from, to, timestamp;
 
+
+
+
+
     delete[] message;
+    //Shift offset by +1
+    //m_node->receive(from,to,timestamp,message);
     return 0;
 }
 int NodeNetwork::onDisconnect(Socket* socket){
