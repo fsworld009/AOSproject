@@ -146,16 +146,16 @@ int NodeNetwork::onAccept(Socket* socket){
 
 
         /*analize the last number of ip address to get net machine number
-        64~99 ->   X-64 (net01~36)
+        64~99 ->   X-63 (net01~36)
         62 -> 36 (net37)
-        101~108 -> X-64 (net38~45)
+        101~108 -> X-63 (net38~45)
 
         */
         int netid;
         if(ip_num[3]==62){
             netid = 36;
         }else{
-            netid = ip_num[3]-64;
+            netid = ip_num[3]-63;
         }
         printf("NodeNetwork:: acceptted socket is from net%d\n",netid);
         for(int i=0;i<m_num_of_nodes;i++){
@@ -187,5 +187,13 @@ int NodeNetwork::onReceive(char* message,Socket* socket){
     return 0;
 }
 int NodeNetwork::onDisconnect(Socket* socket){
+    if(m_mode==0){
+        for(int i=0;i<m_num_of_nodes;i++){
+            if(m_sockets[i]==socket){
+                delete m_sockets[i];
+                m_sockets[i] = 0;
+            }
+        }
+    }
     return 0;
 }

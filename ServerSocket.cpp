@@ -111,7 +111,7 @@ ServerSocket::~ServerSocket()
 {
     //dtor
     //
-    disconnect();
+    //disconnect();
 
 }
 

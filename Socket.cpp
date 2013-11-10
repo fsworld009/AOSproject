@@ -121,7 +121,7 @@ Socket::~Socket()
 
 
     //close socket
-    disconnect();
+    //disconnect();
 }
 
 int Socket::getBoundedIp(char* ip){
