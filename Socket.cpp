@@ -20,10 +20,11 @@ Socket::Socket(): m_send_thread(this), m_receive_thread(this)
 
 }
 
-Socket::Socket(int socket): m_socket(socket), m_send_thread(this), m_receive_thread(this)
+Socket::Socket(int socket,char* client_ip): m_socket(socket), m_send_thread(this), m_receive_thread(this)
 {
     //ctor
     m_event_listener = 0;
+    strcpy(m_ip,client_ip);
     createThreads();
 }
 
@@ -81,6 +82,8 @@ int Socket::createThreads(){
     return 0;
 }
 
+
+
 int Socket::send(char* message){
     if(m_socket==-1){
         cout << "Socket: no connection yet" << endl;
@@ -119,6 +122,10 @@ Socket::~Socket()
 
     //close socket
     disconnect();
+}
+
+int Socket::getBoundedIp(char* ip){
+    strcpy(m_ip,ip);
 }
 
 int Socket::disconnect(){

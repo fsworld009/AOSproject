@@ -21,14 +21,15 @@ class Socket
 {
     public:
         Socket();
-        Socket(int socket);
+        Socket(int socket,char* client_ip);
         virtual ~Socket();
         int connectHost(char* host, int port);
         int send(char* Message);
         bool registerEventListener(SocketEventListener* listener);
         bool unregisterEventListener();
         int disconnect();
-        int getHostDNS(char* host);
+        int getHostDNS(char* host); //not tested yet
+        int getBoundedIp(char* ip);    //not tested yet
         //static void* send_thread_main(void* args);
         //static void* receive_thread_main(void* args);
     protected:
@@ -66,6 +67,7 @@ class Socket
         SendThread m_send_thread;
         ReceiveThread m_receive_thread;
         char m_host[SOCKET_MAX_BUFFER_SIZE];
+        char m_ip[20];
 
 
         SocketEventListener* m_event_listener;

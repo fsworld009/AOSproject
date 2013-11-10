@@ -137,7 +137,7 @@ int ServerSocket::AcceptThread::run(){
 
             //upper listener is responsible for memory management of this Socket
             if(m_parent->m_event_listener != 0){
-                m_parent->m_event_listener->onAccept(new Socket(accept_socket));
+                m_parent->m_event_listener->onAccept(new Socket(accept_socket,inet_ntoa(client_addr_in->sin_addr)));
             }
 
         }

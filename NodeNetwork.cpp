@@ -59,11 +59,13 @@ int NodeNetwork::init(){
 
 
 int NodeNetwork::send(int from, int to, int timestamp, char* message){
+    char buff[SOCKET_MAX_BUFFER_SIZE];
+    sprintf(buff,"%c%c%4c%s",(char)from,(char)to,timestamp,message);
+
     //Shift offset by -1
     from = from-1;
     to = to-1;
-    char buff[SOCKET_MAX_BUFFER_SIZE];
-    sprintf(buff,"%c%c%d%s",(char)from,(char)to,timestamp,message);
+
 
     if(m_mode==0){
         //find socket to send
@@ -112,6 +114,35 @@ NodeNetwork::~NodeNetwork()
 
 int NodeNetwork::onAccept(Socket* socket){
     socket->registerEventListener(this);
+    if(m_mode==0){
+        char ip[20];
+        socket->getBoundedIp(ip);
+
+        //parse ip into 4 ints
+        int ip_num[4];
+        sscanf(ip,"%d.%d.%d.%d",&ip_num[0],&ip_num[1],&ip_num[2],&ip_num[3]);
+
+        /*analize the last number of ip address to get net machine number
+        64~99 ->   X-64 (net01~36)
+        62 -> 36 (net37)
+        101~108 -> X-64 (net38~45)
+
+        */
+        int netid;
+        if(ip_num[3]==62){
+            netid = 36;
+        }else{
+            netid = ip_num[3]-64;
+        }
+        for(int i=0;i<m_num_of_nodes;i++){
+            if(m_netid[i]==netid){
+                m_sockets[i] = socket;
+            }
+        }
+
+    }
+
+
     return 0;
 }
 int NodeNetwork::onDisconnect(ServerSocket* serverSocket){
@@ -123,13 +154,11 @@ int NodeNetwork::onConnect(Socket* socket){
 }
 int NodeNetwork::onReceive(char* message,Socket* socket){
     int from, to, timestamp;
-
-
-
-
+    from = (int)message[0];
+    to = (int)message[1];
+    timestamp = (int) ((message[2]<<3)|(message[3]<<2)|(message[4]<<1)|(message[5]));
 
     delete[] message;
-    //Shift offset by +1
     //m_node->receive(from,to,timestamp,message);
     return 0;
 }
