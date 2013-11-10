@@ -125,7 +125,7 @@ Socket::~Socket()
 }
 
 int Socket::getBoundedIp(char* ip){
-    strcpy(m_ip,ip);
+    strcpy(ip,m_ip);
 }
 
 int Socket::disconnect(){

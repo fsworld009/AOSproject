@@ -26,7 +26,7 @@ int NodeNetwork::init(){
 
     //parse config file end
     //m_server_socket.init()
-    printf("adsa%d",m_mode);
+
 
     if(m_mode==0){
             //work without switch
@@ -123,10 +123,14 @@ int NodeNetwork::onAccept(Socket* socket){
     if(m_mode==0){
         char ip[20];
         socket->getBoundedIp(ip);
+        printf("getBoundedIp: %s\n",ip);
 
         //parse ip into 4 ints
         int ip_num[4];
         sscanf(ip,"%d.%d.%d.%d",&ip_num[0],&ip_num[1],&ip_num[2],&ip_num[3]);
+
+        printf("%d %d %d %d \n",ip_num[0],ip_num[1],ip_num[2],ip_num[3]);
+
 
         /*analize the last number of ip address to get net machine number
         64~99 ->   X-64 (net01~36)
@@ -140,6 +144,7 @@ int NodeNetwork::onAccept(Socket* socket){
         }else{
             netid = ip_num[3]-64;
         }
+        printf("NodeNetwork:: acceptted socket is from net%d\n",netid);
         for(int i=0;i<m_num_of_nodes;i++){
             if(m_netid[i]==netid){
                 m_sockets[i] = socket;
@@ -152,6 +157,7 @@ int NodeNetwork::onAccept(Socket* socket){
     return 0;
 }
 int NodeNetwork::onDisconnect(ServerSocket* serverSocket){
+    printf("NodeNetwork::onDisconnect called\n");
     return 0;
 }
 
