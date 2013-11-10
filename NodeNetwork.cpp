@@ -115,10 +115,12 @@ int NodeNetwork::close(){
             }
         }
         delete[] m_sockets;
+        m_sockets=0;
     }
 
     if(m_socket != 0){
         delete m_socket;
+        m_socket=0;
     }
 
 

@@ -10,5 +10,6 @@ int main()
 
     char c;
     cin >> c;
+    nodeNetwork.close();
     return 0;
 }
