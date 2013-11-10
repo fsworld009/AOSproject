@@ -26,6 +26,8 @@ class NodeNetwork: public ServerSocketEventListener, SocketEventListener
         int onReceive(char* message,Socket* socket);
         int onDisconnect(Socket* socket);
 
+        int close();
+
     protected:
     private:
         int init();

@@ -105,17 +105,31 @@ int NodeNetwork::start(){
     return 0;
 }
 
-NodeNetwork::~NodeNetwork()
-{
-    //dtor
+int NodeNetwork::close(){
+    m_server_socket.disconnect();
+
     if(m_sockets !=0){
         for(int i=0;i<m_num_of_nodes;i++){
             if(m_sockets[i] != 0){
                 delete m_sockets[i];
             }
         }
+        delete[] m_sockets;
     }
-    delete[] m_sockets;
+
+    if(m_socket != 0){
+        delete m_socket;
+    }
+
+
+    return 0;
+}
+
+NodeNetwork::~NodeNetwork()
+{
+    //dtor
+
+    close();
 }
 
 int NodeNetwork::onAccept(Socket* socket){
@@ -123,13 +137,10 @@ int NodeNetwork::onAccept(Socket* socket){
     if(m_mode==0){
         char ip[20];
         socket->getBoundedIp(ip);
-        printf("getBoundedIp: %s\n",ip);
 
         //parse ip into 4 ints
         int ip_num[4];
         sscanf(ip,"%d.%d.%d.%d",&ip_num[0],&ip_num[1],&ip_num[2],&ip_num[3]);
-
-        printf("%d %d %d %d \n",ip_num[0],ip_num[1],ip_num[2],ip_num[3]);
 
 
         /*analize the last number of ip address to get net machine number
@@ -157,7 +168,6 @@ int NodeNetwork::onAccept(Socket* socket){
     return 0;
 }
 int NodeNetwork::onDisconnect(ServerSocket* serverSocket){
-    printf("NodeNetwork::onDisconnect called\n");
     return 0;
 }
 
