@@ -1,7 +1,7 @@
 # depslib dependency file v1.0
-1384140801 source:/home/leeyc/MutualExclusion/NodeNetwork/main.cpp
+1384187899 source:/home/leeyc/MutualExclusion/NodeNetwork/main.cpp
 	<iostream>
-	"NodeNetwork.h"
+	"./node/NodeNetwork.h"
 
 1383199933 source:/home/leeyc/MutualExclusion/NodeNetwork/MutexLock.cpp
 	"MutexLock.h"
@@ -155,4 +155,74 @@
 
 1384120071 source:/home/leeyc/MutualExclusion/nodenetwork/ServerSocketEventListener.cpp
 	"ServerSocketEventListener.h"
+
+1384187926 /home/leeyc/MutualExclusion/NodeNetwork/node/NodeNetwork.h
+	"../socket/ServerSocket.h"
+	"../socket/Socket.h"
+	"../socket/ServerSocketEventListener.h"
+	"../socket/SocketEventListener.h"
+
+1384187886 /home/leeyc/MutualExclusion/NodeNetwork/socket/ServerSocket.h
+	<sys/socket.h>
+	<netinet/in.h>
+	"../thread/Thread.h"
+	"Socket.h"
+
+1384187404 /home/leeyc/MutualExclusion/NodeNetwork/thread/Thread.h
+	<pthread.h>
+
+1384187881 /home/leeyc/MutualExclusion/NodeNetwork/socket/Socket.h
+	<sys/socket.h>
+	<netinet/in.h>
+	<queue>
+	"../thread/Thread.h"
+	"../thread/MutexLock.h"
+
+1384187404 /home/leeyc/MutualExclusion/NodeNetwork/thread/MutexLock.h
+	<pthread.h>
+
+1384187512 /home/leeyc/MutualExclusion/NodeNetwork/socket/ServerSocketEventListener.h
+	"Socket.h"
+	"ServerSocket.h"
+
+1384187404 /home/leeyc/MutualExclusion/NodeNetwork/socket/SocketEventListener.h
+	"Socket.h"
+
+1384187512 source:/home/leeyc/MutualExclusion/NodeNetwork/socket/ServerSocket.cpp
+	"ServerSocket.h"
+	"ServerSocketEventListener.h"
+	<sys/socket.h>
+	<netinet/in.h>
+	<stdlib.h>
+	<strings.h>
+	<iostream>
+	<unistd.h>
+	<netdb.h>
+	<stdio.h>
+	<arpa/inet.h>
+
+1384187512 source:/home/leeyc/MutualExclusion/NodeNetwork/socket/ServerSocketEventListener.cpp
+	"ServerSocketEventListener.h"
+
+1384187512 source:/home/leeyc/MutualExclusion/NodeNetwork/socket/Socket.cpp
+	"Socket.h"
+	<sys/socket.h>
+	<netinet/in.h>
+	<stdlib.h>
+	<string.h>
+	<iostream>
+	<unistd.h>
+	<netdb.h>
+	"SocketEventListener.h"
+
+1384187404 source:/home/leeyc/MutualExclusion/NodeNetwork/socket/SocketEventListener.cpp
+	"SocketEventListener.h"
+
+1384187404 source:/home/leeyc/MutualExclusion/NodeNetwork/thread/MutexLock.cpp
+	"MutexLock.h"
+
+1384187404 source:/home/leeyc/MutualExclusion/NodeNetwork/thread/Thread.cpp
+	"Thread.h"
+	<pthread.h>
+	<iostream>
 

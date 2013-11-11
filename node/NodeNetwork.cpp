@@ -31,7 +31,7 @@ int NodeNetwork::init(){
 
     if(m_mode==0){
             //work without switch
-        FILE* fp = fopen("socket","r");
+        FILE* fp = fopen("socket.txt","r");
 
         fscanf(fp,"%d",&m_port);
         fscanf(fp,"%d",&m_num_of_nodes);
