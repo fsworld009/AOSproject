@@ -1,5 +1,5 @@
 #include <iostream>
-#include "NodeNetwork.h"
+#include "./node/NodeNetwork.h"
 
 using namespace std;
 

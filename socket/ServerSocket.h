@@ -2,7 +2,7 @@
 #define SERVERSOCKET_H
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include "Thread.h"
+#include "../thread/Thread.h"
 #include "Socket.h"
 
 

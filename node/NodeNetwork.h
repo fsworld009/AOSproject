@@ -1,9 +1,9 @@
 #ifndef NODENETWORK_H
 #define NODENETWORK_H
-#include "ServerSocket.h"
-#include "Socket.h"
-#include "ServerSocketEventListener.h"
-#include "SocketEventListener.h"
+#include "../socket/ServerSocket.h"
+#include "../socket/Socket.h"
+#include "../socket/ServerSocketEventListener.h"
+#include "../socket/SocketEventListener.h"
 
 class Node;
 

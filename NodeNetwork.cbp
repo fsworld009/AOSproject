@@ -35,20 +35,20 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="MutexLock.cpp" />
-		<Unit filename="MutexLock.h" />
-		<Unit filename="NodeNetwork.cpp" />
-		<Unit filename="NodeNetwork.h" />
-		<Unit filename="ServerSocket.cpp" />
-		<Unit filename="ServerSocket.h" />
-		<Unit filename="ServerSocketEventListener.cpp" />
-		<Unit filename="ServerSocketEventListener.h" />
-		<Unit filename="Socket.cpp" />
-		<Unit filename="Socket.h" />
-		<Unit filename="SocketEventListener.cpp" />
-		<Unit filename="SocketEventListener.h" />
-		<Unit filename="Thread.cpp" />
-		<Unit filename="Thread.h" />
+		<Unit filename="./thread/MutexLock.cpp" />
+		<Unit filename="./thread/MutexLock.h" />
+		<Unit filename="./node/NodeNetwork.cpp" />
+		<Unit filename="./node/NodeNetwork.h" />
+		<Unit filename="./socket/ServerSocket.cpp" />
+		<Unit filename="./socket/ServerSocket.h" />
+		<Unit filename="./socket/ServerSocketEventListener.cpp" />
+		<Unit filename="./socket/ServerSocketEventListener.h" />
+		<Unit filename="./socket/Socket.cpp" />
+		<Unit filename="./socket/Socket.h" />
+		<Unit filename="./socket/SocketEventListener.cpp" />
+		<Unit filename="./socket/SocketEventListener.h" />
+		<Unit filename="./thread/Thread.cpp" />
+		<Unit filename="./thread/Thread.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

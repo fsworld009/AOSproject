@@ -10,8 +10,8 @@ this class only provides TCP socket
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <queue>
-#include "Thread.h"
-#include "MutexLock.h"
+#include "../thread/Thread.h"
+#include "../thread/MutexLock.h"
 
 #define SOCKET_MAX_BUFFER_SIZE 1024
 
