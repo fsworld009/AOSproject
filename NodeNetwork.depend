@@ -1,7 +1,8 @@
 # depslib dependency file v1.0
-1384187899 source:/home/leeyc/MutualExclusion/NodeNetwork/main.cpp
+1384192475 source:/home/leeyc/MutualExclusion/NodeNetwork/main.cpp
 	<iostream>
-	"./node/NodeNetwork.h"
+	<stdlib.h>
+	"./node/LAKNode.h"
 
 1383199933 source:/home/leeyc/MutualExclusion/NodeNetwork/MutexLock.cpp
 	"MutexLock.h"
@@ -156,7 +157,7 @@
 1384120071 source:/home/leeyc/MutualExclusion/nodenetwork/ServerSocketEventListener.cpp
 	"ServerSocketEventListener.h"
 
-1384189078 /home/leeyc/MutualExclusion/NodeNetwork/node/NodeNetwork.h
+1384189507 /home/leeyc/MutualExclusion/NodeNetwork/node/NodeNetwork.h
 	"../socket/ServerSocket.h"
 	"../socket/Socket.h"
 	"../socket/ServerSocketEventListener.h"
@@ -232,9 +233,20 @@
 	<string.h>
 	<stdio.h>
 
-1384189059 source:/home/leeyc/MutualExclusion/NodeNetwork/node/Node.cpp
+1384192619 source:/home/leeyc/MutualExclusion/NodeNetwork/node/Node.cpp
 	"Node.h"
+	<iostream>
+	"string.h"
+	<stdlib.h>
+	<fstream>
 
-1384189257 /home/leeyc/MutualExclusion/NodeNetwork/node/Node.h
+1384191673 /home/leeyc/MutualExclusion/NodeNetwork/node/Node.h
+	<set>
 	"NodeNetwork.h"
+
+1384192512 source:/home/leeyc/MutualExclusion/NodeNetwork/node/LAKNode.cpp
+	"LAKNode.h"
+
+1384192518 /home/leeyc/MutualExclusion/NodeNetwork/node/LAKNode.h
+	"Node.h"
 

@@ -11,8 +11,9 @@ implementation of our alforithm design
 class LAKNode: public Node
 {
     public:
-        LAKNode();
+        LAKNode(int node_id);
         virtual ~LAKNode();
+        int virtual receive(int from, int to, int timestamp, char* message);
     protected:
     private:
 };
