@@ -67,7 +67,16 @@ int NodeNetwork::init(){
 
 int NodeNetwork::send(int from, int to, int timestamp, char* message){
     char buff[SOCKET_MAX_BUFFER_SIZE];
-    sprintf(buff,"%c%c%4c%s",(char)to,(char)from,timestamp,message);
+    //cout << "aaaa" << endl;
+    //sprintf(buff,"%c%c%4c%s",to,from,timestamp,message);
+    char* a = (char*)&timestamp;
+    buff[0] = (char) to;
+    buff[1] = (char) from;
+    buff[2] = (char) *(a);
+    buff[3] = (char) *(a+1);
+    buff[4] = (char) *(a+2);
+    buff[5] = (char) *(a+3);
+    strcpy(&buff[6],message);
 
     //Shift offset by -1
     from = from-1;

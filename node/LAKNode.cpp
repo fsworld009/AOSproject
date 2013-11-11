@@ -37,6 +37,7 @@ int LAKNode::run(){
 	{
 
 		this->timer++;
+		cout << timer << endl;
 		set<int>::iterator iter = time_schedule.find(this->timer);
 		if (iter != time_schedule.end())
 		{
