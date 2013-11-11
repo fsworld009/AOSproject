@@ -1,4 +1,5 @@
 #include "NodeNetwork.h"
+#include "Node.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -191,7 +192,7 @@ int NodeNetwork::onReceive(char* message,Socket* socket){
 
     strcpy(buff,message+6);
     printf("NodeNetwork:: recv from=%d to=%d timestamp=%d msg: %s\n",from,to,timestamp,buff);
-    //m_node->receive(from,to,timestamp,message);
+    m_node->receive(from,to,timestamp,message);
 
 
     delete[] message;

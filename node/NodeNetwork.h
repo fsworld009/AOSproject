@@ -5,6 +5,13 @@
 #include "../socket/ServerSocketEventListener.h"
 #include "../socket/SocketEventListener.h"
 
+/*
+Yu-Chun Lee, yxl122130 11.8.2013
+network layer of algorithm nodes
+
+set m_mode=0 for algorithm tests and 1 for cooperation to switches
+*/
+
 class Node;
 
 class NodeNetwork: public ServerSocketEventListener, SocketEventListener
