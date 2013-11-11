@@ -51,13 +51,9 @@ int NodeNetwork::init(){
         }
         m_server_socket.init(m_port);
         m_server_socket.registerEventListener(this);
-        m_server_socket.start();
+
 
         fclose(fp);
-    }else{
-        //work with switch
-        //m_socket = new Socket();
-        //config this socket to connect to switch
     }
 
 
@@ -104,7 +100,14 @@ int NodeNetwork::send(int from, int to, int timestamp, char* message){
 }
 
 int NodeNetwork::start(){
-    init();
+    if(m_mode==0){
+        m_server_socket.start();
+    }else{
+        //work with switch
+        //m_socket = new Socket();
+        //config this socket to connect to switch
+    }
+
     return 0;
 }
 

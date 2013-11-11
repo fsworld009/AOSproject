@@ -18,6 +18,7 @@ class NodeNetwork: public ServerSocketEventListener, SocketEventListener
 {
     public:
         NodeNetwork(Node* node);
+        int init();
         int start();
 
         int send(int from, int to, int timestamp, char* message);
@@ -37,7 +38,7 @@ class NodeNetwork: public ServerSocketEventListener, SocketEventListener
 
     protected:
     private:
-        int init();
+
         Socket** m_sockets; //used when working without switch
         Socket* m_socket; //used when working with switch
         ServerSocket m_server_socket;

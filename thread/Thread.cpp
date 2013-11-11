@@ -6,6 +6,7 @@ using namespace std;
 Thread::Thread()
 {
     //ctor
+    m_thread=0;
 }
 
 int Thread::start(){
@@ -24,7 +25,10 @@ void* Thread::firstrun(void* ptr){
 }
 
 int Thread::join(){
-    int thread_join = pthread_join(m_thread, 0);
+    int thread_join;
+    if(m_thread != 0){
+        thread_join = pthread_join(m_thread, 0);
+    }
     return thread_join==0?1:0;
 }
 

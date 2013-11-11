@@ -61,8 +61,9 @@ int ServerSocket::disconnect(){
 
 
         //close sockets (hence unblock send/recv threads)
+
         shutdown(m_socket,SHUT_RDWR);
-        //close(m_socket);
+        close(m_socket);
         m_socket = -1;
 
         //trun off threads

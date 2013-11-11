@@ -28,6 +28,8 @@ int Node::init(){
         cout << *iter << " ";
     }
     cout << endl;*/
+
+    m_node_network.init();
     return 0;
 }
 
