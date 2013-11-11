@@ -45,6 +45,9 @@ int Socket::connectHost(char* host,int port){
         exit(-1);
     }
 
+    int option=1;
+    setsockopt(m_socket,SOL_SOCKET,SO_REUSEADDR,(char*)&option,sizeof(option));
+
     sockaddr_in server_addr;
     hostent *server = 0;
 

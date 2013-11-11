@@ -40,9 +40,12 @@ int ServerSocket::init(int port){
 }
 
 int ServerSocket::start(){
-    int a = bind(m_socket, (struct sockaddr *) &m_addr,sizeof(m_addr));
-    if (a < 0){
-        cout << "ServerSocket: Socket bind error " << a << endl;
+    int option=1;
+    setsockopt(m_socket,SOL_SOCKET,SO_REUSEADDR,(char*)&option,sizeof(option));
+    int bind_result = bind(m_socket, (struct sockaddr *) &m_addr,sizeof(m_addr));
+
+    if (bind_result < 0){
+        cout << "ServerSocket: Socket bind error " << bind_result << endl;
         exit(-1);
     }
 
@@ -59,7 +62,7 @@ int ServerSocket::disconnect(){
 
         //close sockets (hence unblock send/recv threads)
         shutdown(m_socket,SHUT_RDWR);
-        close(m_socket);
+        //close(m_socket);
         m_socket = -1;
 
         //trun off threads
