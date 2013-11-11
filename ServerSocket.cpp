@@ -40,8 +40,9 @@ int ServerSocket::init(int port){
 }
 
 int ServerSocket::start(){
-    if (bind(m_socket, (struct sockaddr *) &m_addr,sizeof(m_addr)) < 0){
-        cout << "ServerSocket: Socket bind error" << endl;
+    int a = bind(m_socket, (struct sockaddr *) &m_addr,sizeof(m_addr));
+    if (a < 0){
+        cout << "ServerSocket: Socket bind error " << a << endl;
         exit(-1);
     }
 

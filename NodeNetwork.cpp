@@ -55,7 +55,7 @@ int NodeNetwork::init(){
         fclose(fp);
     }else{
         //work with switch
-        m_socket = new Socket();
+        //m_socket = new Socket();
         //config this socket to connect to switch
     }
 
@@ -108,13 +108,14 @@ int NodeNetwork::start(){
 }
 
 int NodeNetwork::close(){
-    m_server_socket.disconnect();
+
 
     if(m_sockets !=0){
         for(int i=0;i<m_num_of_nodes;i++){
             if(m_sockets[i] != 0){
                 m_sockets[i]->disconnect();
                 delete m_sockets[i];
+                m_sockets[i]=0;
             }
         }
         delete[] m_sockets;
@@ -125,21 +126,22 @@ int NodeNetwork::close(){
         m_socket->disconnect();
         delete m_socket;
         m_socket=0;
+
     }
 
-
+    m_server_socket.disconnect();
     return 0;
 }
 
 NodeNetwork::~NodeNetwork()
 {
     //dtor
-
     close();
 }
 
 int NodeNetwork::onAccept(Socket* socket){
     socket->registerEventListener(this);
+    m_socket = socket;
     if(m_mode==0){
         char ip[20];
         socket->getBoundedIp(ip);
@@ -198,10 +200,14 @@ int NodeNetwork::onReceive(char* message,Socket* socket){
 }
 int NodeNetwork::onDisconnect(Socket* socket){
     if(m_mode==0){
-        for(int i=0;i<m_num_of_nodes;i++){
-            if(m_sockets[i]==socket){
-                delete m_sockets[i];
-                m_sockets[i] = 0;
+        if(m_sockets != 0){
+            for(int i=0;i<m_num_of_nodes;i++){
+                if(m_sockets[i] != 0){
+                    if(m_sockets[i]==socket){
+                        delete m_sockets[i];
+                        m_sockets[i] = 0;
+                    }
+                }
             }
         }
     }

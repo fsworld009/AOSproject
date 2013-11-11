@@ -132,7 +132,7 @@ int Socket::getBoundedIp(char* ip){
 int Socket::disconnect(){
     if(m_socket != -1){
 
-
+        int socket_num = m_socket;
         //close sockets (hence unblock send/recv threads)
         shutdown(m_socket,SHUT_RDWR);
         close(m_socket);
@@ -150,7 +150,7 @@ int Socket::disconnect(){
             m_messages.pop();
         }
         m_queue_lock.unlock();
-        cout << "Socket: disconnected" << endl;
+        cout << "Socket " << socket_num << " : disconnected" << endl;
 
     }
     if(m_event_listener != 0){
