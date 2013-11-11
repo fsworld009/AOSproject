@@ -141,7 +141,7 @@ NodeNetwork::~NodeNetwork()
 
 int NodeNetwork::onAccept(Socket* socket){
     socket->registerEventListener(this);
-    m_socket = socket;
+    //m_socket = socket;
     if(m_mode==0){
         char ip[20];
         socket->getBoundedIp(ip);
