@@ -65,7 +65,7 @@ int NodeNetwork::init(){
 
 
 
-int NodeNetwork::send(int from, int to, int timestamp, char* message){
+int NodeNetwork::send(unsigned int from, unsigned int to, unsigned int timestamp, char* message){
     char buff[SOCKET_MAX_BUFFER_SIZE];
     //cout << "aaaa" << endl;
     //sprintf(buff,"%c%c%4c%s",to,from,timestamp,message);

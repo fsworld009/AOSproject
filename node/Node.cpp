@@ -39,7 +39,7 @@ int Node::start(){
     return 0;
 }
 
-int Node::send(int from, int to, int timestamp, string message){
+int Node::send(unsigned int from,unsigned int to,unsigned int timestamp, string message){
     m_node_network.send(from,to,timestamp,(char*)message.c_str());
     return 0;
 }
