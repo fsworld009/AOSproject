@@ -23,7 +23,7 @@ int main(int argc, char*argv [])
     if(algorithm==0){
         LAKNode node(nodeid);
         node.init();
-
+        node.start();
     }else{
 
     }

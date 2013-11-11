@@ -33,8 +33,14 @@ int Node::init(){
     return 0;
 }
 
-int Node::send(int from, int to, int timestamp, char* message){
-    m_node_network.send(from,to,timestamp,message);
+int Node::start(){
+    m_node_network.start();
+    run();
+    return 0;
+}
+
+int Node::send(int from, int to, int timestamp, string message){
+    m_node_network.send(from,to,timestamp,(char*)message.c_str());
     return 0;
 }
 

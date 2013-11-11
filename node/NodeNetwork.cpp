@@ -1,7 +1,9 @@
 #include "NodeNetwork.h"
 #include "Node.h"
 #include <string.h>
+#include <string>
 #include <stdio.h>
+using namespace std;
 
 
 
@@ -188,17 +190,19 @@ int NodeNetwork::onConnect(Socket* socket){
 }
 int NodeNetwork::onReceive(char* message,Socket* socket){
     int to, from, timestamp;
-    char buff[SOCKET_MAX_BUFFER_SIZE];
+    //char buff[SOCKET_MAX_BUFFER_SIZE];
     from = (int)message[0];
     to = (int)message[1];
     timestamp = (int) ((message[2]<<3)|(message[3]<<2)|(message[4]<<1)|(message[5]));
 
-    strcpy(buff,message+6);
-    printf("NodeNetwork:: recv from=%d to=%d timestamp=%d msg: %s\n",from,to,timestamp,buff);
-    m_node->receive(from,to,timestamp,message);
+    //strcpy(buff,message+6);
+    printf("NodeNetwork:: recv from=%d to=%d timestamp=%d msg: %s\n",from,to,timestamp,message+6);
+    string msg_string(message);
+
+    m_node->receive(from,to,timestamp,msg_string);
 
 
-    delete[] message;
+
 
     return 0;
 }

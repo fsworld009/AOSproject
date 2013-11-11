@@ -217,7 +217,8 @@ int Socket::ReceiveThread::run(){
         if(m_parent->m_event_listener != 0){
             char* temp = new char[SOCKET_MAX_BUFFER_SIZE];
             strcpy(temp,m_parent->m_buffer);
-            m_parent->m_event_listener->onReceive(temp,m_parent);   //event listener is responsible of memory management of temp char[]
+            m_parent->m_event_listener->onReceive(temp,m_parent);
+            delete[] temp;
         }
         usleep(100);
     }
