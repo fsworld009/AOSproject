@@ -227,30 +227,32 @@
 	<pthread.h>
 	<iostream>
 
-1384196218 source:/home/leeyc/MutualExclusion/NodeNetwork/node/NodeNetwork.cpp
+1384198494 source:/home/leeyc/MutualExclusion/NodeNetwork/node/NodeNetwork.cpp
 	"NodeNetwork.h"
 	"Node.h"
 	<string.h>
 	<string>
 	<stdio.h>
 
-1384195316 source:/home/leeyc/MutualExclusion/NodeNetwork/node/Node.cpp
+1384198866 source:/home/leeyc/MutualExclusion/NodeNetwork/node/Node.cpp
 	"Node.h"
 	<iostream>
 	"string.h"
 	<stdlib.h>
 	<fstream>
 
-1384195285 /home/leeyc/MutualExclusion/NodeNetwork/node/Node.h
+1384198508 /home/leeyc/MutualExclusion/NodeNetwork/node/Node.h
 	<set>
 	<string>
 	"NodeNetwork.h"
 
-1384196404 source:/home/leeyc/MutualExclusion/NodeNetwork/node/LAKNode.cpp
+1384198859 source:/home/leeyc/MutualExclusion/NodeNetwork/node/LAKNode.cpp
 	"LAKNode.h"
 	<unistd.h>
 	<iostream>
+	<sstream>
+	<stdlib.h>
 
-1384195847 /home/leeyc/MutualExclusion/NodeNetwork/node/LAKNode.h
+1384198612 /home/leeyc/MutualExclusion/NodeNetwork/node/LAKNode.h
 	"Node.h"
 

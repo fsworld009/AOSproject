@@ -10,12 +10,23 @@ Yu-Chun Lee yxl122130 11.1.2013
 master class of algorithm nodes
 */
 
+enum MessageType
+    {
+        REQUEST,
+        RELEASE,
+        RECEIVE,
+        ACK,
+        RELAY,
+        TOKEN
+    };
+
 class Node
 {
     public:
         Node(int node_id);
         virtual ~Node();
-        int virtual receive(int from, int to, int timestamp, string message)=0;
+        //int virtual receive(int from, int to, int timestamp, string message)=0;
+        int virtual receive_message(string message)=0;
 
         int send(int from, int to, int timestamp, string message);
         int init();
