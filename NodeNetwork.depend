@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1384055786 source:/home/leeyc/MutualExclusion/NodeNetwork/main.cpp
+1384140801 source:/home/leeyc/MutualExclusion/NodeNetwork/main.cpp
 	<iostream>
 	"NodeNetwork.h"
 
@@ -9,7 +9,7 @@
 1383199933 /home/leeyc/MutualExclusion/NodeNetwork/MutexLock.h
 	<pthread.h>
 
-1384061230 source:/home/leeyc/MutualExclusion/NodeNetwork/ServerSocket.cpp
+1384140801 source:/home/leeyc/MutualExclusion/NodeNetwork/ServerSocket.cpp
 	"ServerSocket.h"
 	"ServerSocketEventListener.h"
 	<sys/socket.h>
@@ -64,11 +64,12 @@
 	<pthread.h>
 	<iostream>
 
-1384062750 source:/home/leeyc/MutualExclusion/NodeNetwork/NodeNetwork.cpp
+1384141229 source:/home/leeyc/MutualExclusion/NodeNetwork/NodeNetwork.cpp
 	"NodeNetwork.h"
+	<string.h>
 	<stdio.h>
 
-1384057476 /home/leeyc/MutualExclusion/NodeNetwork/NodeNetwork.h
+1384140801 /home/leeyc/MutualExclusion/NodeNetwork/NodeNetwork.h
 	"ServerSocket.h"
 	"Socket.h"
 	"ServerSocketEventListener.h"

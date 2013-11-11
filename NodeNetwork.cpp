@@ -1,4 +1,5 @@
 #include "NodeNetwork.h"
+#include <string.h>
 #include <stdio.h>
 
 
@@ -90,6 +91,7 @@ int NodeNetwork::send(int from, int to, int timestamp, char* message){
             m_sockets[to]->connectHost(host,m_port);
 
         }
+        printf("NodeNetwork:: send from=%d to=%d timestamp=%d msg: %s\n",from,to,timestamp,message);
         m_sockets[to]->send(buff);
     }else{
         //send to switch
@@ -111,6 +113,7 @@ int NodeNetwork::close(){
     if(m_sockets !=0){
         for(int i=0;i<m_num_of_nodes;i++){
             if(m_sockets[i] != 0){
+                m_sockets[i]->disconnect();
                 delete m_sockets[i];
             }
         }
@@ -119,6 +122,7 @@ int NodeNetwork::close(){
     }
 
     if(m_socket != 0){
+        m_socket->disconnect();
         delete m_socket;
         m_socket=0;
     }
@@ -178,12 +182,18 @@ int NodeNetwork::onConnect(Socket* socket){
 }
 int NodeNetwork::onReceive(char* message,Socket* socket){
     int to, from, timestamp;
+    char buff[SOCKET_MAX_BUFFER_SIZE];
     from = (int)message[0];
     to = (int)message[1];
     timestamp = (int) ((message[2]<<3)|(message[3]<<2)|(message[4]<<1)|(message[5]));
 
-    delete[] message;
+    strcpy(buff,message+6);
+    printf("NodeNetwork:: recv from=%d to=%d timestamp=%d msg: %s\n",from,to,timestamp,buff);
     //m_node->receive(from,to,timestamp,message);
+
+
+    delete[] message;
+
     return 0;
 }
 int NodeNetwork::onDisconnect(Socket* socket){
