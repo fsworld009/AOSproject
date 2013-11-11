@@ -1,6 +1,7 @@
 #include "NodeNetwork.h"
 #include "Node.h"
 #include <string.h>
+#include <iostream>
 #include <string>
 #include <stdio.h>
 using namespace std;
@@ -76,6 +77,7 @@ int NodeNetwork::send(int from, int to, int timestamp, char* message){
     if(m_mode==0){
         //find socket to send
         if(m_sockets[to] == 0){
+
             m_sockets[to] = new Socket();
 
             char host[20];
@@ -87,10 +89,11 @@ int NodeNetwork::send(int from, int to, int timestamp, char* message){
             }
 
             m_sockets[to]->registerEventListener(this);
+
             m_sockets[to]->connectHost(host,m_port);
 
         }
-        printf("NodeNetwork:: send from=%d to=%d timestamp=%d msg: %s\n",from,to,timestamp,message);
+        printf("NodeNetwork:: send from=%d to=%d timestamp=%d msg: %s\n",from+1,to+1,timestamp,message);
         m_sockets[to]->send(buff);
     }else{
         //send to switch

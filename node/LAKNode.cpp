@@ -12,9 +12,17 @@ LAKNode::LAKNode(int node_id): Node(node_id)
 
     //assume 1 has token
     if(node_id==1){
-        this->has_token=true;
+        this->token_holder = 1;
+        this->seq = -1;
+        this->expt_resp = -1;
+        this->is_inCS = false;
+        this->has_token = true;
     }else{
-        this->has_token=false;
+        this->token_holder = 1;
+        this->seq = -1;
+        this->expt_resp = -1;
+        this->is_inCS = false;
+        this->has_token = false;
     }
 }
 
@@ -29,11 +37,9 @@ int LAKNode::run(){
 	{
 
 		this->timer++;
-        cout << this->timer << endl;
 		set<int>::iterator iter = time_schedule.find(this->timer);
 		if (iter != time_schedule.end())
 		{
-            cout << "adasda" << endl;
 			this->send_request();
 		}
 		sleep(1);

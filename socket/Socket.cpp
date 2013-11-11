@@ -54,6 +54,10 @@ int Socket::connectHost(char* host,int port){
     bzero((char *) &server_addr, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server = gethostbyname(host);
+    if(server==0){
+        cout << "Socket: cannot find host name" << server << endl;
+        return 0;
+    }
     bcopy((char *)server->h_addr,(char *)&server_addr.sin_addr.s_addr,server->h_length);
     server_addr.sin_port = htons(port);
 
