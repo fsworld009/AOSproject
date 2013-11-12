@@ -37,7 +37,7 @@ int LAKNode::run(){
 	{
 
 		this->timer++;
-		//cout << timer << endl;
+		cout << timer << endl;
 		set<int>::iterator iter = time_schedule.find(this->timer);
 		if (iter != time_schedule.end())
 		{
@@ -45,7 +45,7 @@ int LAKNode::run(){
 		}
 		usleep(1000);
 	}
-
+    cout << "END" << endl;
     return 0;
 }
 
@@ -54,6 +54,7 @@ int LAKNode::run(){
 //Message Handlers
 void LAKNode::send_request()
 {
+    cout << "send_request" << endl;
 	if (this->has_token)
 	{
 		this->is_inCS = true;
@@ -89,6 +90,7 @@ void LAKNode::send_request()
 		has_token = false;
 		is_inCS = false;
 		acked_node.clear();
+		cout << "send_request_end" << endl;
 	}
 }
 
@@ -311,6 +313,7 @@ string LAKNode::message_string(Message msg)
 		{
 			ss << " " << message_string(*iter);
 		}
+		str = ss.str();
 		break;
 	default:
 		break;

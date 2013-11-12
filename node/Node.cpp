@@ -17,6 +17,7 @@ int Node::signal(){
     m_wait_lock.lock();
     m_wait=false;
     m_wait_lock.unlock();
+    return 0;
 }
 
 int Node::waitForSignal(){
@@ -37,7 +38,7 @@ int Node::init(){
 
 
     //print set
-
+    /*
     set<int>::iterator iter;
     for (iter = quorum_set.begin(); iter != quorum_set.end(); iter++)
     {
@@ -48,7 +49,7 @@ int Node::init(){
     {
         cout << *iter << " ";
     }
-    cout << endl;
+    cout << endl;*/
 
     m_node_network.init();
     return 0;

@@ -137,6 +137,7 @@ int Socket::getBoundedIp(char* ip){
 }
 
 int Socket::disconnect(){
+    cout << "Socket::disconnect" << endl;
     if(m_socket != -1){
 
         int socket_num = m_socket;
