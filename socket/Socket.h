@@ -13,7 +13,7 @@ this class only provides TCP socket
 #include "../thread/Thread.h"
 #include "../thread/MutexLock.h"
 
-#define SOCKET_MAX_BUFFER_SIZE 64
+#define SOCKET_MAX_BUFFER_SIZE 128
 
 class SocketEventListener;
 

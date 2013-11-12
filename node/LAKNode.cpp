@@ -18,12 +18,13 @@ LAKNode::LAKNode(int node_id): Node(node_id)
         this->is_inCS = false;
         this->has_token = true;
     }else{
-        this->token_holder = 1;
+        this->token_holder = 1; //
         this->seq = -1;
         this->expt_resp = -1;
         this->is_inCS = false;
         this->has_token = false;
     }
+    CS_timer=0;
 }
 
 LAKNode::~LAKNode()
@@ -33,11 +34,17 @@ LAKNode::~LAKNode()
 
 int LAKNode::run(){
 	this->timer = 0;
+	this->CS_timer=0;
 	while (this->timer < 300)
 	{
 
 		this->timer++;
-		//cout << timer << endl;
+		if(CS_timer==0 && is_inCS){
+            finishCS();
+		}else if(CS_timer>0){
+            CS_timer--;
+		}
+		//cout << CS_timer << endl;
 		set<int>::iterator iter = time_schedule.find(this->timer);
 		if (iter != time_schedule.end())
 		{
@@ -54,18 +61,16 @@ int LAKNode::run(){
 //Message Handlers
 void LAKNode::send_request()
 {
-	if (this->has_token)
+	if (this->has_token && !this->is_inCS)
 	{
-		this->is_inCS = true;
 		accessCS();
-		this->is_inCS = false;
-		finishCS();
 	}
 	else
 	{
 		LAKNode::Message msg;
 		msg.from = this->node_id;
-		msg.seq = this->seq++;
+		this->seq++;
+		msg.seq = this->seq;
 		msg.type = REQUEST;
 
 		set<int>::iterator iter = quorum_set.find(token_holder);
@@ -86,8 +91,7 @@ void LAKNode::send_request()
 			}
 		}
 
-		has_token = false;
-		is_inCS = false;
+
 		acked_node.clear();
 	}
 }
@@ -167,29 +171,37 @@ void LAKNode::receive_release(LAKNode::Message msg)
 
 void LAKNode::receive_relay(LAKNode::Message msg)
 {
-
+    if (is_inCS){
+        token_list.insert(msg);
+    }else{
+        send_token(msg.from);
+        send_release();
+    }
 }
 
 void LAKNode::receive_token(LAKNode::Message msg)
 {
 	if (msg.req_list.begin()->from != this->node_id)
 	{
+		token_list = msg.req_list;
 		send_token(msg.from);
 	}
 	else
 	{
 		has_token = true;
-		cout << "T1" << endl;
+		token_list = msg.req_list;
 		set<int>::iterator iter;
 		for (iter = quorum_set.begin(); iter != quorum_set.end(); iter++)
 		{
 			if ((*iter) != this->node_id)
 				send_receive();
 		}
-		is_inCS = true;
-		accessCS();
-		is_inCS = false;
-		finishCS();
+		//is_inCS = true;
+		if(!is_inCS){
+            accessCS();
+		}
+		//is_inCS = false;
+		//finishCS();
 	}
 }
 
@@ -197,6 +209,7 @@ void LAKNode::receive_token(LAKNode::Message msg)
 //actions
 void LAKNode::send_token(int to)
 {
+    has_token = false;
 	LAKNode::Message msg;
 	msg.from = this->node_id;
 	msg.to = to;
@@ -264,21 +277,23 @@ void LAKNode::send_relay(int from, int seq)
 
 void LAKNode::accessCS()
 {
+    this->is_inCS = true;
+    this->CS_timer = 10;
 	cout << "The node is entering CS now ..." << endl;
-	for (size_t i = 0; i < 100; i++)
-	{
-	}
-	cout << "The node is exiting CS now ..." << endl;
+
+
 }
 
 void LAKNode::finishCS()
 {
+    cout << "The node is exiting CS now ..." << endl;
 	if (token_list.empty() != true)
 	{
-		has_token = false;
+        token_list.erase(token_list.begin());
 		send_token(token_list.begin()->from);
 		send_release();
 	}
+	this->is_inCS = false;
 }
 
 string LAKNode::message_string(Message msg)
@@ -327,7 +342,7 @@ LAKNode::Message LAKNode::string_message(string msgstr)
 	string type = msgstr.substr(0,msgstr.find_first_of(" "));
 	msg.type = (MessageType)atoi(type.c_str());
 	msgstr = msgstr.substr(msgstr.find_first_of(" ")+1);
-	//set<Message> req_list;
+	set<Message> req_list;
 	switch (msg.type)
 	{
 	case REQUEST:
@@ -376,8 +391,9 @@ LAKNode::Message LAKNode::string_message(string msgstr)
 		msg.to = atoi(msgstr.substr(0, msgstr.find_first_of(" ")).c_str());
 		msgstr = msgstr.substr(msgstr.find_first_of(" ") + 1);
 
-		if (msgstr.length() != 0)
+		while (msgstr.length() != 0)
 		{
+            //cout << msgstr.length() << endl;
 			Message rq;
 			rq.from = atoi(msgstr.substr(0, msgstr.find_first_of(" ")).c_str());
 			msgstr = msgstr.substr(msgstr.find_first_of(" ") + 1);
@@ -388,9 +404,12 @@ LAKNode::Message LAKNode::string_message(string msgstr)
 			rq.seq = atoi(msgstr.substr(0, msgstr.find_first_of(" ")).c_str());
 			msgstr = msgstr.substr(msgstr.find_first_of(" ") + 1);
 
-			msg.req_list.insert(rq);
+			req_list.insert(rq);
+			if(msgstr.length()==1){
+                break;
+			}
 		}
-		//msg.req_list = req_list;
+		msg.req_list = req_list;
 		break;
 	default:
 		break;
