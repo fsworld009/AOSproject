@@ -45,8 +45,8 @@ int Socket::connectHost(char* host,int port){
         exit(-1);
     }
 
-    int option=1;
-    setsockopt(m_socket,SOL_SOCKET,SO_REUSEADDR,(char*)&option,sizeof(option));
+    //int option=1;
+    //setsockopt(m_socket,SOL_SOCKET,SO_REUSEADDR,(char*)&option,sizeof(option));
 
     sockaddr_in server_addr;
     hostent *server = 0;
@@ -137,14 +137,14 @@ int Socket::getBoundedIp(char* ip){
 }
 
 int Socket::disconnect(){
-    cout << "Socket::disconnect" << endl;
     if(m_socket != -1){
 
         int socket_num = m_socket;
         //close sockets (hence unblock send/recv threads)
         shutdown(m_socket,SHUT_RDWR);
         close(m_socket);
-        m_socket = -1;
+
+
 
         //trun off threads
         m_thread_running = false;
@@ -159,6 +159,7 @@ int Socket::disconnect(){
         }
         m_queue_lock.unlock();
         cout << "Socket " << socket_num << " : disconnected" << endl;
+        m_socket = -1;
 
     }
     if(m_event_listener != 0){
@@ -197,6 +198,7 @@ int Socket::SendThread::run(){
             m_parent->m_queue_lock.unlock();
         usleep(100);
     }
+    //cout << "end send thread" << endl;
     return 0;
 }
 
@@ -227,5 +229,6 @@ int Socket::ReceiveThread::run(){
         }
         usleep(100);
     }
+    //cout << "end recv thread" << endl;
     return 0;
 }

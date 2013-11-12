@@ -10,25 +10,26 @@ Node::Node(int node_id): node_id(node_id), m_node_network(this, this->node_id)
 {
     //ctor
     m_wait=true;
+    m_close=false;
 }
 
 //called by NodeNetwork when it received "START" signal
 int Node::signal(){
-    m_wait_lock.lock();
+    //m_wait_lock.lock();
     m_wait=false;
-    m_wait_lock.unlock();
+    //m_wait_lock.unlock();
     return 0;
 }
 
 int Node::waitForSignal(){
-    m_wait_lock.lock();
+    //m_wait_lock.lock();
     cout << "Waiting for signal..." << endl;
     while(m_wait){
-        m_wait_lock.unlock();
+        //m_wait_lock.unlock();
         usleep(100);
-        m_wait_lock.lock();
+        //m_wait_lock.lock();
     }
-    m_wait_lock.unlock();
+    //m_wait_lock.unlock();
     return 0;
 }
 
@@ -59,6 +60,7 @@ int Node::start(){
     m_node_network.start();
     waitForSignal();
     run();
+    m_node_network.send_end_signal();
     return 0;
 }
 
@@ -90,6 +92,16 @@ int Node::parse_schedule(){
 		time_schedule.insert(atoi(str.c_str()));
 	}
 	return 0;
+}
+
+int Node::close(){
+    m_node_network.close();
+    m_close=true;
+    return 0;
+}
+
+bool Node::end(){
+    return m_close;
 }
 
 Node::~Node()

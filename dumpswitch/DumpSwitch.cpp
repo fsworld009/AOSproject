@@ -39,7 +39,7 @@ int DumpSwitch::init(){
 
         m_logfile.open("log_dumpserver.txt");
 
-        m_connected = m_num_of_nodes;
+        m_connected = 0;
         m_disconnected=0;
 
         printf("port=%d num_of_switches = %d num_of_nodes=%d\n",m_port,m_num_of_switches,m_num_of_nodes);
@@ -48,6 +48,7 @@ int DumpSwitch::init(){
 
         m_server_socket.init(m_port);
         m_server_socket.registerEventListener(this);
+        m_completed=0;
 }
 
 int DumpSwitch::start(){
@@ -67,7 +68,7 @@ int DumpSwitch::onConnect(Socket* socket){
 
 }
 int DumpSwitch::onReceive(char* message,Socket* socket){
-    if(strlen(message) >=6){
+    if(strlen(message) >=5){
         if(strncmp("NODE ",message,5)==0){
             int nodeid;
             sscanf(message+5,"%d",&nodeid);
@@ -75,8 +76,8 @@ int DumpSwitch::onReceive(char* message,Socket* socket){
             m_logfile << "RECV NODE ID " << nodeid << endl;
             m_socket[nodeid-1] = socket;
 
-            m_connected--;
-            if(m_connected==0){
+            m_connected++;
+            if(m_connected==m_num_of_nodes){
                 cout << "SEND START SIGNAL" << endl;
                 m_logfile << "SEND START SIGNAL" << endl;
                 for(int i=0;i<m_num_of_nodes;i++){
@@ -86,6 +87,18 @@ int DumpSwitch::onReceive(char* message,Socket* socket){
 
 
             return 0;
+        }else if(strncmp("END ",message,4)==0){
+            int nodeid;
+            sscanf(message+4,"%d",&nodeid);
+            m_completed++;
+            cout << "RECV END NODE " << nodeid << endl;
+            if(m_completed==m_num_of_nodes){
+                cout << "SEND DISCONNECT SIGNAL" << endl;
+                m_logfile << "SEND DISCONNECT SIGNAL" << endl;
+                for(int i=0;i<m_num_of_nodes;i++){
+                    m_socket[i]->send("DISCONNECT");
+                }
+            }
         }
     }
 
@@ -100,7 +113,7 @@ int DumpSwitch::onReceive(char* message,Socket* socket){
     memcpy(buff,&message[6],SOCKET_MAX_BUFFER_SIZE-6);
 
     //forward msg
-    if(to>=1 && to <=m_num_of_nodes){
+    if(to>=1 && to <=m_num_of_nodes && m_socket[to-1] != 0){
         cout << "FORWARD from=" << from << " to=" << to << " timestamp=" << timestamp << " msg: " << buff << endl;
         m_logfile << "FORWARD from=" << from << " to=" << to << " timestamp=" << timestamp << " msg: " << buff << endl;
         this->m_socket[to-1]->send(message);

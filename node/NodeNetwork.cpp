@@ -236,6 +236,14 @@ int NodeNetwork::onConnect(Socket* socket){
     socket->send(buff);
     return 0;
 }
+
+int NodeNetwork::send_end_signal(){
+    char buff[10];
+    sprintf(buff,"END %d",m_node_id);
+    m_socket->send(buff);
+    return 0;
+}
+
 int NodeNetwork::onReceive(char* message,Socket* socket){
     /*int to, from, timestamp;
     char buff[SOCKET_MAX_BUFFER_SIZE];
@@ -247,6 +255,11 @@ int NodeNetwork::onReceive(char* message,Socket* socket){
     if(strlen(message)==5){
         if(strcmp("START",message)==0){
             m_node->signal();
+        }
+    }else if(strlen(message)==10){
+        if(strcmp("DISCONNECT",message)==0){
+            m_node->close();
+            cout << "RECEIVE DISCONNECT" << endl;
         }
     }else{
 

@@ -34,7 +34,7 @@ class NodeNetwork: public SocketEventListener
         int onDisconnect(Socket* socket);
 
         int close();
-
+        int send_end_signal();
     protected:
     private:
         int getHostName(int netId,char* host);

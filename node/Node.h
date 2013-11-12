@@ -33,15 +33,18 @@ class Node
         int start();
 
         int signal();
+        int close();
+        bool end();
     protected:
         const int node_id;
         set<int> quorum_set;
         set<int> time_schedule;
     private:
         NodeNetwork m_node_network;
-        MutexLock m_wait_lock;
+        //MutexLock m_wait_lock;
         int waitForSignal();
         bool m_wait;
+        bool m_close;
         int parse_quorum();
         int parse_schedule();
         int virtual run()=0;
