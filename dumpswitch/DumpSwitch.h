@@ -24,6 +24,7 @@ class DumpSwitch: public ServerSocketEventListener, SocketEventListener
         int m_num_of_nodes;
         int m_num_of_switches;
         int m_connected;
+        int m_disconnected;
         int* m_node_netid;
         int* m_switch_netid;
         Socket** m_socket;

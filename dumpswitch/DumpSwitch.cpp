@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include "DumpSwitch.h"
 #include <string.h>
 #include <iostream>
@@ -37,6 +38,7 @@ int DumpSwitch::init(){
         fclose(fp);
 
         m_connected = m_num_of_nodes;
+        m_disconnected=0;
 
         printf("port=%d num_of_switches = %d num_of_nodes=%d\n",m_port,m_num_of_switches,m_num_of_nodes);
 
@@ -67,7 +69,7 @@ int DumpSwitch::onReceive(char* message,Socket* socket){
         if(strncmp("NODE ",message,5)==0){
             int nodeid;
             sscanf(message+5,"%d",&nodeid);
-            cout << "RECV NODE ID" << nodeid << endl;
+            cout << "RECV NODE ID " << nodeid << endl;
             m_socket[nodeid-1] = socket;
 
             m_connected--;
@@ -86,11 +88,28 @@ int DumpSwitch::onReceive(char* message,Socket* socket){
     //regular msg
 
     unsigned int from=0, to=0;
+    char buff[SOCKET_MAX_BUFFER_SIZE];
     memcpy(&to,&message[0],1);
     memcpy(&from,&message[1],1);
-    cout << "FORWARD MSG FROM " << from << " TO " << to << endl;
+    bzero(buff,SOCKET_MAX_BUFFER_SIZE);
+    memcpy(buff,&message[6],SOCKET_MAX_BUFFER_SIZE-6);
+    cout << "FORWARD MSG " << buff << " FROM " << from << " TO " << to << endl;
     //forward msg
-    this->m_socket[m_node_netid[to-1]]->send(message);
+    if(to>=1 && to <=m_num_of_nodes){
+        this->m_socket[m_node_netid[to-1]]->send(message);
+    }else{
+        cout << "Discard illegal message, please check algorithm design" << endl;
+    }
+
 
 }
-int DumpSwitch::onDisconnect(Socket* socket){}
+int DumpSwitch::onDisconnect(Socket* socket){
+    for(int i=0;i<m_num_of_nodes;i++){
+        if(socket==m_socket[i]){
+            m_disconnected++;
+            delete socket;
+        }
+    }
+    return 0;
+
+}

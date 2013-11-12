@@ -37,13 +37,13 @@ int LAKNode::run(){
 	{
 
 		this->timer++;
-		cout << timer << endl;
+		//cout << timer << endl;
 		set<int>::iterator iter = time_schedule.find(this->timer);
 		if (iter != time_schedule.end())
 		{
 			this->send_request();
 		}
-		sleep(1);
+		usleep(1000);
 	}
 
     return 0;

@@ -186,7 +186,7 @@ int Socket::SendThread::run(){
                     m_parent->disconnect();
                     return 0;
                 }else{
-                    cout << "Socket: send msg " << msg << endl;
+                    //cout << "Socket: send msg " << msg << endl;
                 }
 
 
@@ -213,7 +213,7 @@ int Socket::ReceiveThread::run(){
             m_parent->disconnect();
             return 0;
         }else{
-            cout << "Socket: receive msg " << m_parent->m_buffer << endl;
+            //cout << "Socket: receive msg " << m_parent->m_buffer << endl;
         }
 
 

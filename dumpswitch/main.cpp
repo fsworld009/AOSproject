@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
+#include <unistd.h>
 #include "DumpSwitch.h"
 
 using namespace std;
@@ -15,7 +16,10 @@ int main(int argc, char*argv [])
     DumpSwitch ds;
     ds.init();
     ds.start();
-    char a;
-    cin >> a;
+
+
+    while(true){
+        usleep(100);
+    }
     return 0;
 }

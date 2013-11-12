@@ -237,9 +237,7 @@ int NodeNetwork::onReceive(char* message,Socket* socket){
     timestamp = (int) ((message[2]<<3)|(message[3]<<2)|(message[4]<<1)|(message[5]));
 
     strcpy(buff,message+6);*/
-    cout << "enter" << endl;
     if(strlen(message)==5){
-        cout << "enter" << endl;
         if(strcmp("START",message)==0){
             m_node->signal();
         }
