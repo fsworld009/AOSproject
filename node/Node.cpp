@@ -70,27 +70,29 @@ int Node::send(unsigned int from,unsigned int to,unsigned int timestamp, string 
 }
 
 int Node::parse_quorum(){
-    char filepath[20];
-    sprintf(filepath,"quorum%d.txt",node_id);
+    char filepath[30];
+    sprintf(filepath,"../config/quorum%d.txt",node_id);
 	ifstream ifs(filepath, ios::in);
 	string str;
 	while (getline(ifs, str))
 	{
 		quorum_set.insert(atoi(str.c_str()));
 	}
+    ifs.close();
 	return 0;
 }
 
 
 int Node::parse_schedule(){
-    char filepath[20];
-    sprintf(filepath,"schedule%d.txt",node_id);
+    char filepath[30];
+    sprintf(filepath,"../config/schedule%d.txt",node_id);
 	ifstream ifs(filepath, ios::in);
 	string str;
 	while (getline(ifs, str))
 	{
 		time_schedule.insert(atoi(str.c_str()));
 	}
+    ifs.close();
 	return 0;
 }
 

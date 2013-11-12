@@ -1,5 +1,5 @@
 bin/
 obj/
-dumpswitch/*.o
-dumpswitch/*.out
+*.o
+*.out
 log_*.txt
