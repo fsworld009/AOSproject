@@ -97,8 +97,10 @@ int DumpSwitch::onReceive(char* message,Socket* socket){
                 m_logfile << "SEND DISCONNECT SIGNAL" << endl;
                 for(int i=0;i<m_num_of_nodes;i++){
                     m_socket[i]->send("DISCONNECT");
+                    m_end = true;
                 }
             }
+            return 0;
         }
     }
 

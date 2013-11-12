@@ -21,7 +21,7 @@ int main(int argc, char*argv [])
     while(true){
         usleep(100);
         if(ds.end()){
-            //break;
+            break;
         }
     }
     ds.close();

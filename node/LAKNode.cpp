@@ -179,6 +179,7 @@ void LAKNode::receive_token(LAKNode::Message msg)
 	else
 	{
 		has_token = true;
+		cout << "T1" << endl;
 		set<int>::iterator iter;
 		for (iter = quorum_set.begin(); iter != quorum_set.end(); iter++)
 		{
@@ -188,6 +189,7 @@ void LAKNode::receive_token(LAKNode::Message msg)
 		is_inCS = true;
 		accessCS();
 		is_inCS = false;
+		finishCS();
 	}
 }
 
@@ -325,7 +327,7 @@ LAKNode::Message LAKNode::string_message(string msgstr)
 	string type = msgstr.substr(0,msgstr.find_first_of(" "));
 	msg.type = (MessageType)atoi(type.c_str());
 	msgstr = msgstr.substr(msgstr.find_first_of(" ")+1);
-	set<Message> req_list;
+	//set<Message> req_list;
 	switch (msg.type)
 	{
 	case REQUEST:
@@ -374,7 +376,7 @@ LAKNode::Message LAKNode::string_message(string msgstr)
 		msg.to = atoi(msgstr.substr(0, msgstr.find_first_of(" ")).c_str());
 		msgstr = msgstr.substr(msgstr.find_first_of(" ") + 1);
 
-		while (msgstr.length() != 0)
+		if (msgstr.length() != 0)
 		{
 			Message rq;
 			rq.from = atoi(msgstr.substr(0, msgstr.find_first_of(" ")).c_str());
@@ -386,9 +388,9 @@ LAKNode::Message LAKNode::string_message(string msgstr)
 			rq.seq = atoi(msgstr.substr(0, msgstr.find_first_of(" ")).c_str());
 			msgstr = msgstr.substr(msgstr.find_first_of(" ") + 1);
 
-			req_list.insert(rq);
+			msg.req_list.insert(rq);
 		}
-		msg.req_list = req_list;
+		//msg.req_list = req_list;
 		break;
 	default:
 		break;
