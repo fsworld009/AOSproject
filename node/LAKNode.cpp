@@ -33,10 +33,11 @@ LAKNode::~LAKNode()
 
 int LAKNode::run(){
 	this->timer = 0;
-	while (this->timer < 200)
+	while (this->timer < 300)
 	{
 
 		this->timer++;
+		cout << timer << endl;
 		set<int>::iterator iter = time_schedule.find(this->timer);
 		if (iter != time_schedule.end())
 		{

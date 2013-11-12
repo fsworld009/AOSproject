@@ -21,7 +21,7 @@ class NodeNetwork: public SocketEventListener
         int init();
         int start();
 
-        int send(int from, int to, int timestamp, char* message);
+        int send(unsigned int from,unsigned int to,unsigned int timestamp, char* message);
 
         virtual ~NodeNetwork();
 
