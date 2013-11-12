@@ -1,0 +1,1 @@
+g++ *.cpp ../socket/*.cpp ../thread/*.cpp -pthread

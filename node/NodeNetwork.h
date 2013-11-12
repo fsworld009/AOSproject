@@ -44,7 +44,9 @@ class NodeNetwork: public ServerSocketEventListener, SocketEventListener
         ServerSocket m_server_socket;
         //int m_node_number;
         int m_num_of_nodes;
-        int* m_netid;
+        int* m_node_netid;
+        int* m_switch_netid;
+
         Node* m_node;
 
         int m_port;
