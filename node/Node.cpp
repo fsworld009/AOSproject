@@ -29,7 +29,7 @@ int Node::init(){
     }
     cout << endl;
 
-    m_node_network.init();
+    m_node_network.init(this->node_id);
     return 0;
 }
 

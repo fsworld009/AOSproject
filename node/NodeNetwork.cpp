@@ -11,55 +11,53 @@ using namespace std;
 NodeNetwork::NodeNetwork(Node* node): m_node(node)
 {
     //ctor
-    m_sockets=0;
+    //m_sockets=0;
     m_socket=0;
 
     m_port=0;
     m_num_of_nodes=0;
 
 
-    //mode 0= without switches
-    //mode 1 = work with switches
-    m_mode=0;
+    m_socket=0;
+}
+
+int NodeNetwork::getHostName(int netid, char* host){
+    if(netid==0){
+        strcpy(host,"localhost");
+    }else if(netid>=1 && netid<=9){
+        sprintf(host,"net0%d.utdallas.edu",netid);
+    }else{
+        sprintf(host,"net%d.utdallas.edu",netid);
+    }
+    return 0;
 }
 
 
-
-
-int NodeNetwork::init(){
+int NodeNetwork::init(int node_id){
     //parse config file
 
-    //parse config file end
-    //m_server_socket.init()
+    //work without switch
+    FILE* fp = fopen("socket.txt","r");
 
-
-    if(m_mode==0){
-            //work without switch
-        FILE* fp = fopen("socket.txt","r");
-
-        fscanf(fp,"%d",&m_port);
-        fscanf(fp,"%d",&m_num_of_nodes);
-
-
-        m_netid = new int[m_num_of_nodes];
-
-        printf("mode=%d port=%d num_of_nodes=%d\n",m_mode,m_port,m_num_of_nodes);
-
-        m_sockets = new Socket*[m_num_of_nodes];
-
-        for(int i=0;i<m_num_of_nodes;i++){
-            m_sockets[i] = 0;   //init pointers to Socket
-            fscanf(fp,"%d",&m_netid[i]);
-            printf("m_netid[%d]=%d\n",i,m_netid[i]);
+    fscanf(fp,"%d",&m_port);
+    fscanf(fp,"%d",&m_num_of_switches);
+    //m_switch_netid = new int[m_num_of_switches];
+    for(int i=0;i<m_num_of_switches;i++){
+        fscanf(fp,"%d",&m_switch_netid);
+        if(i==(node_id-1)/4){
+            break;
         }
-        m_server_socket.init(m_port);
-        m_server_socket.registerEventListener(this);
-
-
-        fclose(fp);
     }
 
+    fscanf(fp,"%d",&m_num_of_nodes);
+    /*m_node_netid = new int[m_num_of_nodes];
+    for(int i=0;i<m_num_of_nodes;i++){
+        fscanf(fp,"%d",&m_node_netid[i]);
+    }*/
 
+    fclose(fp);
+
+    m_socket = new Socket();
     return 0;
 }
 
@@ -74,7 +72,7 @@ int NodeNetwork::send(int from, int to, int timestamp, char* message){
     to = to-1;
 
 
-    if(m_mode==0){
+    /*if(m_mode==0){
         //find socket to send
         if(m_sockets[to] == 0){
 
@@ -93,33 +91,36 @@ int NodeNetwork::send(int from, int to, int timestamp, char* message){
             m_sockets[to]->connectHost(host,m_port);
 
         }
-        printf("NodeNetwork:: send from=%d to=%d timestamp=%d msg: %s\n",from+1,to+1,timestamp,message);
+
         m_sockets[to]->send(buff);
     }else{
         //send to switch
         //m_socket->send(buff);
-    }
+    }*/
 
-
+    printf("NodeNetwork:: send from=%d to=%d timestamp=%d msg: %s\n",from+1,to+1,timestamp,message);
+    m_socket->send(buff);
     return 0;
 }
 
 int NodeNetwork::start(){
-    if(m_mode==0){
+    /*if(m_mode==0){
         m_server_socket.start();
     }else{
         //work with switch
         //m_socket = new Socket();
         //config this socket to connect to switch
-    }
-
+    }*/
+    char host[24];
+    this->getHostName(m_switch_netid,host);
+    m_socket->connectHost(host,m_port);
     return 0;
 }
 
 int NodeNetwork::close(){
 
 
-    if(m_sockets !=0){
+    /*if(m_sockets !=0){
         for(int i=0;i<m_num_of_nodes;i++){
             if(m_sockets[i] != 0){
                 m_sockets[i]->disconnect();
@@ -129,7 +130,7 @@ int NodeNetwork::close(){
         }
         delete[] m_sockets;
         m_sockets=0;
-    }
+    }*/
 
     if(m_socket != 0){
         m_socket->disconnect();
@@ -138,7 +139,7 @@ int NodeNetwork::close(){
 
     }
 
-    m_server_socket.disconnect();
+    //m_server_socket.disconnect();
     return 0;
 }
 
@@ -147,7 +148,7 @@ NodeNetwork::~NodeNetwork()
     //dtor
     close();
 }
-
+/*
 int NodeNetwork::onAccept(Socket* socket){
     socket->registerEventListener(this);
     //m_socket = socket;
@@ -160,12 +161,12 @@ int NodeNetwork::onAccept(Socket* socket){
         sscanf(ip,"%d.%d.%d.%d",&ip_num[0],&ip_num[1],&ip_num[2],&ip_num[3]);
 
 
-        /*analize the last number of ip address to get net machine number
-        64~99 ->   X-63 (net01~36)
-        62 -> 36 (net37)
-        101~108 -> X-63 (net38~45)
+        //analize the last number of ip address to get net machine number
+        //64~99 ->   X-63 (net01~36)
+        //62 -> 36 (net37)
+        //101~108 -> X-63 (net38~45)
 
-        */
+
         int netid;
         if(ip_num[3]==62){
             netid = 36;
@@ -186,7 +187,7 @@ int NodeNetwork::onAccept(Socket* socket){
 }
 int NodeNetwork::onDisconnect(ServerSocket* serverSocket){
     return 0;
-}
+}*/
 
 int NodeNetwork::onConnect(Socket* socket){
     return 0;
@@ -213,7 +214,7 @@ int NodeNetwork::onReceive(char* message,Socket* socket){
     return 0;
 }
 int NodeNetwork::onDisconnect(Socket* socket){
-    if(m_mode==0){
+    /*if(m_mode==0){
         if(m_sockets != 0){
             for(int i=0;i<m_num_of_nodes;i++){
                 if(m_sockets[i] != 0){
@@ -224,6 +225,6 @@ int NodeNetwork::onDisconnect(Socket* socket){
                 }
             }
         }
-    }
+    }*/
     return 0;
 }

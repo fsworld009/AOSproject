@@ -22,23 +22,25 @@ int DumpSwitch::init(){
         FILE* fp = fopen("../socket.txt","r");
 
         fscanf(fp,"%d",&m_port);
-        fscanf(fp,"%d",&m_num_of_switch);
-        m_switch_netid = new int[m_num_of_switch];
-        for(int i=0;i<m_num_of_switch;i++){
+        fscanf(fp,"%d",&m_num_of_switches);
+        m_switch_netid = new int[m_num_of_switches];
+        for(int i=0;i<m_num_of_switches;i++){
             fscanf(fp,"%d",&m_switch_netid[i]);
         }
 
-        fscanf(fp,"%d",&m_num_of_node);
-        m_node_netid = new int[m_num_of_node];
-        for(int i=0;i<m_num_of_node;i++){
+        fscanf(fp,"%d",&m_num_of_nodes);
+        m_node_netid = new int[m_num_of_nodes];
+        for(int i=0;i<m_num_of_nodes;i++){
             fscanf(fp,"%d",&m_node_netid[i]);
         }
 
-        m_connected = m_num_of_node;
+        fclose(fp);
 
-        printf("port=%d num_of_switches = %d num_of_nodes=%d\n",m_port,m_num_of_switch,m_num_of_node);
+        m_connected = m_num_of_nodes;
 
-        m_socket = new Socket*[m_num_of_node];
+        printf("port=%d num_of_switches = %d num_of_nodes=%d\n",m_port,m_num_of_switches,m_num_of_nodes);
+
+        m_socket = new Socket*[m_num_of_nodes];
 
         m_server_socket.init(m_port);
         m_server_socket.registerEventListener(this);

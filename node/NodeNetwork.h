@@ -14,20 +14,18 @@ set m_mode=0 for algorithm tests and 1 for cooperation to switches
 
 class Node;
 
-class NodeNetwork: public ServerSocketEventListener, SocketEventListener
+class NodeNetwork: public SocketEventListener
 {
     public:
         NodeNetwork(Node* node);
-        int init();
+        int init(int node_id);
         int start();
 
         int send(int from, int to, int timestamp, char* message);
 
         virtual ~NodeNetwork();
 
-        //ServerSocketEventListener
-        int onAccept(Socket* socket);
-        int onDisconnect(ServerSocket* serverSocket);
+
 
         //SocketEventListener
         int onConnect(Socket* socket);
@@ -38,19 +36,22 @@ class NodeNetwork: public ServerSocketEventListener, SocketEventListener
 
     protected:
     private:
-
-        Socket** m_sockets; //used when working without switch
+        int getHostName(int netId,char* host);
+        //Socket** m_sockets; //used when working without switch
         Socket* m_socket; //used when working with switch
-        ServerSocket m_server_socket;
+        //ServerSocket m_server_socket;
         //int m_node_number;
         int m_num_of_nodes;
-        int* m_node_netid;
-        int* m_switch_netid;
+        //int* m_node_netid;
+        //int* m_switch_netid;
+
+        int m_switch_netid;
+        int m_num_of_switches;
 
         Node* m_node;
 
         int m_port;
-        int m_mode;
+        //int m_mode;
 };
 
 #endif // NODENETWORK_H
