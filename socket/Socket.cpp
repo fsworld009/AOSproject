@@ -97,7 +97,7 @@ int Socket::send(char* message){
     }
     m_queue_lock.lock();
     char* temp = new char[SOCKET_MAX_BUFFER_SIZE];
-    strcpy(temp,message);
+    memcpy(temp,message,SOCKET_MAX_BUFFER_SIZE);
     m_messages.push(temp);
     m_queue_lock.unlock();
     return 1;
@@ -180,7 +180,7 @@ int Socket::SendThread::run(){
                 msg = m_parent->m_messages.front();
 
                 m_parent->m_messages.pop();
-                result = write(m_parent->m_socket,msg,strlen(msg));
+                result = write(m_parent->m_socket,msg,SOCKET_MAX_BUFFER_SIZE);
                 if(result ==-1 || result == 0){
                     cout << "Socket: send thread close" << endl;
                     m_parent->disconnect();
@@ -220,7 +220,7 @@ int Socket::ReceiveThread::run(){
 
         if(m_parent->m_event_listener != 0){
             char* temp = new char[SOCKET_MAX_BUFFER_SIZE];
-            strcpy(temp,m_parent->m_buffer);
+            memcpy(temp,m_parent->m_buffer,SOCKET_MAX_BUFFER_SIZE);
             m_parent->m_event_listener->onReceive(temp,m_parent);
             delete[] temp;
         }

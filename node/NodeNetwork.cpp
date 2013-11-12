@@ -67,16 +67,32 @@ int NodeNetwork::init(){
 
 int NodeNetwork::send(unsigned int from, unsigned int to, unsigned int timestamp, char* message){
     char buff[SOCKET_MAX_BUFFER_SIZE];
+    bzero(buff,SOCKET_MAX_BUFFER_SIZE);
+    memcpy(buff,&to,1);
+    memcpy(buff+1,&from,1);
+    memcpy(buff+2,&timestamp,4);
+    memcpy(buff+6,message,SOCKET_MAX_BUFFER_SIZE-6);
+
     //cout << "aaaa" << endl;
-    //sprintf(buff,"%c%c%4c%s",to,from,timestamp,message);
-    char* a = (char*)&timestamp;
+    //sprintf(buff,"%u%u%4u",to,from,timestamp);
+
+    //printf("STRLEN: %d RAW: %s\n",strlen(buff),buff);
+    /*char* a = (char*)&timestamp;
     buff[0] = (char) to;
     buff[1] = (char) from;
     buff[2] = (char) *(a);
     buff[3] = (char) *(a+1);
     buff[4] = (char) *(a+2);
-    buff[5] = (char) *(a+3);
-    strcpy(&buff[6],message);
+    buff[5] = (char) *(a+3);*/
+
+    //strcpy(&buff[6],message);
+
+    //cout << "RECOVER: " << x1 <<  " " << x2 << " " << x3 << " MSG: " << buff2 << endl;
+    /*char buff2[1024];
+    cout << "RAW: " << cout.hex << buff << endl;
+    sscanf(buff,"%u%u%u",&x1,&x2,&x3);
+    strcpy(buff2,buff+6);
+    cout << "RECOVER: " << x1 << " " << x2 << " " << x3 << endl;*/
 
     //Shift offset by -1
     from = from-1;
@@ -201,13 +217,23 @@ int NodeNetwork::onConnect(Socket* socket){
     return 0;
 }
 int NodeNetwork::onReceive(char* message,Socket* socket){
-    int to, from, timestamp;
+    /*int to, from, timestamp;
     char buff[SOCKET_MAX_BUFFER_SIZE];
     from = (int)message[0];
     to = (int)message[1];
     timestamp = (int) ((message[2]<<3)|(message[3]<<2)|(message[4]<<1)|(message[5]));
 
-    strcpy(buff,message+6);
+    strcpy(buff,message+6);*/
+
+    unsigned int from=0,to=0,timestamp=0;
+    memcpy(&to,message,1);
+    memcpy(&from,message+1,1);
+    memcpy(&timestamp,message+2,4);
+
+    char buff[SOCKET_MAX_BUFFER_SIZE];
+    bzero(buff,SOCKET_MAX_BUFFER_SIZE);
+    memcpy(&buff,message+6,SOCKET_MAX_BUFFER_SIZE-6);
+
     printf("NodeNetwork:: recv from=%d to=%d timestamp=%d msg: %s\n",from,to,timestamp,buff);
     //m_node->receive(from,to,timestamp,buff);
     string msg_string(buff);
