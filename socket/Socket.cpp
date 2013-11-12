@@ -207,7 +207,7 @@ int Socket::ReceiveThread::run(){
     int result;
     while(m_parent->m_thread_running){
         bzero(m_parent->m_buffer,SOCKET_MAX_BUFFER_SIZE);
-        result = read(m_parent->m_socket,m_parent->m_buffer,SOCKET_MAX_BUFFER_SIZE-1);
+        result = read(m_parent->m_socket,m_parent->m_buffer,SOCKET_MAX_BUFFER_SIZE);
         if(result ==-1 || result == 0){
             cout << "Socket: receive thread close" << endl;
             m_parent->disconnect();

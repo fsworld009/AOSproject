@@ -74,6 +74,12 @@ int NodeNetwork::send(unsigned int from, unsigned int to, unsigned int timestamp
     memcpy(buff+2,&timestamp,4);
     memcpy(buff+6,message,SOCKET_MAX_BUFFER_SIZE-6);
 
+    //unsigned int x1=0,x2=0,x3=0;
+    //memcpy(&x1,buff,1);
+    //memcpy(&x2,buff+1,1);
+    //memcpy(&x3,buff+2,4);
+    //cout << "RECOVER: " << x1 << " " << x2 << " " << x3 << endl;
+
     //cout << "aaaa" << endl;
     //sprintf(buff,"%u%u%4u",to,from,timestamp);
 
