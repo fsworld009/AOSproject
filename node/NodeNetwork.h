@@ -17,8 +17,8 @@ class Node;
 class NodeNetwork: public SocketEventListener
 {
     public:
-        NodeNetwork(Node* node);
-        int init(int node_id);
+        NodeNetwork(Node* node,int node_id);
+        int init();
         int start();
 
         int send(int from, int to, int timestamp, char* message);
@@ -47,6 +47,8 @@ class NodeNetwork: public SocketEventListener
 
         int m_switch_netid;
         int m_num_of_switches;
+
+        int m_node_id;
 
         Node* m_node;
 

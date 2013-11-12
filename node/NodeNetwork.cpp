@@ -8,7 +8,7 @@ using namespace std;
 
 
 
-NodeNetwork::NodeNetwork(Node* node): m_node(node)
+NodeNetwork::NodeNetwork(Node* node, int node_id): m_node(node)
 {
     //ctor
     //m_sockets=0;
@@ -19,6 +19,8 @@ NodeNetwork::NodeNetwork(Node* node): m_node(node)
 
 
     m_socket=0;
+
+    m_node_id = node_id;
 }
 
 int NodeNetwork::getHostName(int netid, char* host){
@@ -33,7 +35,7 @@ int NodeNetwork::getHostName(int netid, char* host){
 }
 
 
-int NodeNetwork::init(int node_id){
+int NodeNetwork::init(){
     //parse config file
 
     //work without switch
@@ -44,7 +46,7 @@ int NodeNetwork::init(int node_id){
     //m_switch_netid = new int[m_num_of_switches];
     for(int i=0;i<m_num_of_switches;i++){
         fscanf(fp,"%d",&m_switch_netid);
-        if(i==(node_id-1)/4){
+        if(i==(m_node_id-1)/4){
             break;
         }
     }
@@ -58,6 +60,7 @@ int NodeNetwork::init(int node_id){
     fclose(fp);
 
     m_socket = new Socket();
+    m_socket->registerEventListener(this);
     return 0;
 }
 
@@ -190,6 +193,9 @@ int NodeNetwork::onDisconnect(ServerSocket* serverSocket){
 }*/
 
 int NodeNetwork::onConnect(Socket* socket){
+    char buff[10];
+    sprintf(buff,"NODE %d",m_node_id);
+    socket->send(buff);
     return 0;
 }
 int NodeNetwork::onReceive(char* message,Socket* socket){

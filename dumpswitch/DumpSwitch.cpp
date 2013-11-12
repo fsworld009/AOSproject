@@ -73,5 +73,11 @@ int DumpSwitch::onReceive(char* message,Socket* socket){
         }
     }
 
+    //regular msg
+    int from=0, to=0;
+    memcpy(&to,&message[1],0);
+    memcpy(&from,&message[1],1);
+    cout << "FORWARD MSG FROM " << from << " TO " << to << endl;
+
 }
 int DumpSwitch::onDisconnect(Socket* socket){}

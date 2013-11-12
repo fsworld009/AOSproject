@@ -5,7 +5,7 @@
 #include <fstream>
 using namespace std;
 
-Node::Node(int node_id): node_id(node_id), m_node_network(this)
+Node::Node(int node_id): node_id(node_id), m_node_network(this, this->node_id)
 {
     //ctor
 }
@@ -29,7 +29,7 @@ int Node::init(){
     }
     cout << endl;
 
-    m_node_network.init(this->node_id);
+    m_node_network.init();
     return 0;
 }
 
