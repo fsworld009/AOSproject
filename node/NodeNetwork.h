@@ -1,5 +1,6 @@
 #ifndef NODENETWORK_H
 #define NODENETWORK_H
+#include <fstream>
 #include "../socket/ServerSocket.h"
 #include "../socket/Socket.h"
 #include "../socket/ServerSocketEventListener.h"
@@ -53,6 +54,7 @@ class NodeNetwork: public SocketEventListener
         Node* m_node;
 
         int m_port;
+        std::ofstream m_logfile;
         //int m_mode;
 };
 

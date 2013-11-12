@@ -2,3 +2,4 @@ bin/
 obj/
 dumpswitch/*.o
 dumpswitch/*.out
+log_*.txt

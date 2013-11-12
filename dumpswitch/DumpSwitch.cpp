@@ -37,6 +37,8 @@ int DumpSwitch::init(){
 
         fclose(fp);
 
+        m_logfile.open("log_dumpserver.txt");
+
         m_connected = m_num_of_nodes;
         m_disconnected=0;
 
@@ -70,11 +72,13 @@ int DumpSwitch::onReceive(char* message,Socket* socket){
             int nodeid;
             sscanf(message+5,"%d",&nodeid);
             cout << "RECV NODE ID " << nodeid << endl;
+            m_logfile << "RECV NODE ID " << nodeid << endl;
             m_socket[nodeid-1] = socket;
 
             m_connected--;
             if(m_connected==0){
                 cout << "SEND START SIGNAL" << endl;
+                m_logfile << "SEND START SIGNAL" << endl;
                 for(int i=0;i<m_num_of_nodes;i++){
                     m_socket[i]->send("START");
                 }
@@ -87,19 +91,22 @@ int DumpSwitch::onReceive(char* message,Socket* socket){
 
     //regular msg
 
-    unsigned int from=0, to=0;
+    unsigned int from=0, to=0, timestamp=0;
     char buff[SOCKET_MAX_BUFFER_SIZE];
     memcpy(&to,&message[0],1);
     memcpy(&from,&message[1],1);
+    memcpy(&timestamp,&message[2],4);
     bzero(buff,SOCKET_MAX_BUFFER_SIZE);
     memcpy(buff,&message[6],SOCKET_MAX_BUFFER_SIZE-6);
 
     //forward msg
     if(to>=1 && to <=m_num_of_nodes){
-        cout << "FORWARD MSG " << buff << " FROM " << from << " TO " << to << endl;
+        cout << "FORWARD from=" << from << " to=" << to << " timestamp=" << timestamp << " msg: " << buff << endl;
+        m_logfile << "FORWARD from=" << from << " to=" << to << " timestamp=" << timestamp << " msg: " << buff << endl;
         this->m_socket[to-1]->send(message);
     }else{
-        cout << "Discard illegal message, please check algorithm design" << endl;
+        cout << "DISCARD from=" << from << " to=" << to << " timestamp=" << timestamp << " msg: " << buff << endl;
+        m_logfile << "DISCARD from=" << from << " to=" << to << " timestamp=" << timestamp << " msg: " << buff << endl;
     }
 
 
@@ -129,4 +136,7 @@ bool DumpSwitch::end(){
 
 int DumpSwitch::close(){
     m_server_socket.disconnect();
+    if(m_logfile.is_open()){
+        m_logfile.close();
+    }
 }

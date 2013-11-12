@@ -4,6 +4,8 @@
 #include "../socket/Socket.h"
 #include "../socket/ServerSocketEventListener.h"
 #include "../socket/SocketEventListener.h"
+#include <fstream>
+
 /*
 Yu-Chun Lee yxl122130
 11.11.2013
@@ -42,6 +44,7 @@ class DumpSwitch: public ServerSocketEventListener, SocketEventListener
         int onConnect(Socket* socket);
         int onReceive(char* message,Socket* socket);
         int onDisconnect(Socket* socket);
+        std::ofstream m_logfile;
 };
 
 #endif // DUMPSWITCH_H

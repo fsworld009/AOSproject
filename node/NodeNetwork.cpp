@@ -58,6 +58,9 @@ int NodeNetwork::init(){
     }*/
 
     fclose(fp);
+    char filename[20];
+    sprintf(filename,"log_node%d.txt",m_node_id);
+    m_logfile.open(filename);
 
     m_socket = new Socket();
     m_socket->registerEventListener(this);
@@ -132,7 +135,8 @@ int NodeNetwork::send(unsigned int from, unsigned int to, unsigned int timestamp
         //m_socket->send(buff);
     }*/
 
-    printf("NodeNetwork:: send from=%d to=%d timestamp=%d msg: %s\n",from+1,to+1,timestamp,message);
+    cout << "NodeNetwork:: send from=" << from+1 << " to=" << to+1 << " timestamp=" << timestamp <<  " msg: " << message << endl;
+    m_logfile << "NodeNetwork:: send from=" << from+1 << " to=" << to+1 << " timestamp=" << timestamp <<  " msg: " << message << endl;
     m_socket->send(buff);
     return 0;
 }
@@ -174,6 +178,9 @@ int NodeNetwork::close(){
     }
 
     //m_server_socket.disconnect();
+    if(m_logfile.is_open()){
+        m_logfile.close();
+    }
     return 0;
 }
 
@@ -252,7 +259,8 @@ int NodeNetwork::onReceive(char* message,Socket* socket){
         bzero(buff,SOCKET_MAX_BUFFER_SIZE);
         memcpy(&buff,message+6,SOCKET_MAX_BUFFER_SIZE-6);
 
-        printf("NodeNetwork:: recv from=%d to=%d timestamp=%d msg: %s\n",from,to,timestamp,buff);
+        cout << "NodeNetwork:: recv from=" << from << " to=" << to << " timestamp=" << timestamp <<  " msg: " << buff << endl;
+        m_logfile << "NodeNetwork:: recv from=" << from << " to=" << to << " timestamp=" << timestamp <<  " msg: " << buff << endl;
         //m_node->receive(from,to,timestamp,buff);
         string msg_string(buff);
         m_node->receive_message(msg_string);
