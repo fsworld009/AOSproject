@@ -1,2 +1,4 @@
 bin/
 obj/
+dumpswitch/*.o
+dumpswitch/*.out
