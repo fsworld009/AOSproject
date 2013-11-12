@@ -237,26 +237,28 @@ int NodeNetwork::onReceive(char* message,Socket* socket){
     timestamp = (int) ((message[2]<<3)|(message[3]<<2)|(message[4]<<1)|(message[5]));
 
     strcpy(buff,message+6);*/
+    cout << "enter" << endl;
+    if(strlen(message)==5){
+        cout << "enter" << endl;
+        if(strcmp("START",message)==0){
+            m_node->signal();
+        }
+    }else{
 
-    unsigned int from=0,to=0,timestamp=0;
-    memcpy(&to,message,1);
-    memcpy(&from,message+1,1);
-    memcpy(&timestamp,message+2,4);
+        unsigned int from=0,to=0,timestamp=0;
+        memcpy(&to,message,1);
+        memcpy(&from,message+1,1);
+        memcpy(&timestamp,message+2,4);
 
-    char buff[SOCKET_MAX_BUFFER_SIZE];
-    bzero(buff,SOCKET_MAX_BUFFER_SIZE);
-    memcpy(&buff,message+6,SOCKET_MAX_BUFFER_SIZE-6);
+        char buff[SOCKET_MAX_BUFFER_SIZE];
+        bzero(buff,SOCKET_MAX_BUFFER_SIZE);
+        memcpy(&buff,message+6,SOCKET_MAX_BUFFER_SIZE-6);
 
-    printf("NodeNetwork:: recv from=%d to=%d timestamp=%d msg: %s\n",from,to,timestamp,buff);
-    //m_node->receive(from,to,timestamp,buff);
-    string msg_string(buff);
-    m_node->receive_message(msg_string);
-
-
-
-
-
-
+        printf("NodeNetwork:: recv from=%d to=%d timestamp=%d msg: %s\n",from,to,timestamp,buff);
+        //m_node->receive(from,to,timestamp,buff);
+        string msg_string(buff);
+        m_node->receive_message(msg_string);
+    }
 
     return 0;
 }

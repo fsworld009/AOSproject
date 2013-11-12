@@ -43,7 +43,7 @@ int LAKNode::run(){
 		{
 			this->send_request();
 		}
-		usleep(100);
+		sleep(1);
 	}
 
     return 0;

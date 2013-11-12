@@ -68,7 +68,17 @@ int DumpSwitch::onReceive(char* message,Socket* socket){
             int nodeid;
             sscanf(message+5,"%d",&nodeid);
             cout << "RECV NODE ID" << nodeid << endl;
-            m_socket[nodeid] = socket;
+            m_socket[nodeid-1] = socket;
+
+            m_connected--;
+            if(m_connected==0){
+                cout << "SEND START SIGNAL" << endl;
+                for(int i=0;i<m_num_of_nodes;i++){
+                    m_socket[i]->send("START");
+                }
+            }
+
+
             return 0;
         }
     }
@@ -79,6 +89,8 @@ int DumpSwitch::onReceive(char* message,Socket* socket){
     memcpy(&to,&message[0],1);
     memcpy(&from,&message[1],1);
     cout << "FORWARD MSG FROM " << from << " TO " << to << endl;
+    //forward msg
+    this->m_socket[m_node_netid[to-1]]->send(message);
 
 }
 int DumpSwitch::onDisconnect(Socket* socket){}

@@ -31,12 +31,17 @@ class Node
         int send(unsigned int from, unsigned int to, unsigned int timestamp, string message);
         int init();
         int start();
+
+        int signal();
     protected:
         const int node_id;
         set<int> quorum_set;
         set<int> time_schedule;
     private:
         NodeNetwork m_node_network;
+        MutexLock m_wait_lock;
+        int waitForSignal();
+        bool m_wait;
         int parse_quorum();
         int parse_schedule();
         int virtual run()=0;
