@@ -9,7 +9,7 @@ using namespace std;
 DumpSwitch::DumpSwitch()
 {
     //ctor
-
+    m_end=false;
 }
 
 
@@ -93,10 +93,11 @@ int DumpSwitch::onReceive(char* message,Socket* socket){
     memcpy(&from,&message[1],1);
     bzero(buff,SOCKET_MAX_BUFFER_SIZE);
     memcpy(buff,&message[6],SOCKET_MAX_BUFFER_SIZE-6);
-    cout << "FORWARD MSG " << buff << " FROM " << from << " TO " << to << endl;
+
     //forward msg
     if(to>=1 && to <=m_num_of_nodes){
-        this->m_socket[m_node_netid[to-1]]->send(message);
+        cout << "FORWARD MSG " << buff << " FROM " << from << " TO " << to << endl;
+        this->m_socket[to-1]->send(message);
     }else{
         cout << "Discard illegal message, please check algorithm design" << endl;
     }
@@ -106,10 +107,26 @@ int DumpSwitch::onReceive(char* message,Socket* socket){
 int DumpSwitch::onDisconnect(Socket* socket){
     for(int i=0;i<m_num_of_nodes;i++){
         if(socket==m_socket[i]){
+
             m_disconnected++;
             delete socket;
+            m_socket[i]=0;
+            if(m_disconnected==m_num_of_nodes){
+                //cout << "all disconnected" << endl;
+                m_end=true;
+            }
         }
     }
     return 0;
 
+}
+
+bool DumpSwitch::end(){
+
+    return m_end;
+
+}
+
+int DumpSwitch::close(){
+    m_server_socket.disconnect();
 }

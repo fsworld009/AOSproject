@@ -20,6 +20,10 @@ int main(int argc, char*argv [])
 
     while(true){
         usleep(100);
+        if(ds.end()){
+            break;
+        }
     }
+    ds.close();
     return 0;
 }

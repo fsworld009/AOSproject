@@ -17,6 +17,8 @@ class DumpSwitch: public ServerSocketEventListener, SocketEventListener
         virtual ~DumpSwitch();
         int init();
         int start();
+        int close();
+        bool end();
     protected:
     private:
         ServerSocket m_server_socket;
@@ -27,6 +29,9 @@ class DumpSwitch: public ServerSocketEventListener, SocketEventListener
         int m_disconnected;
         int* m_node_netid;
         int* m_switch_netid;
+
+        bool m_end;
+        //MutexLock m_end_lock;
         Socket** m_socket;
 
         //ServerSocketEventListener
