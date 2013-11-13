@@ -14,7 +14,7 @@ Node::Node(int node_id): node_id(node_id), m_node_network(this, this->node_id)
 }
 
 //called by NodeNetwork when it received "START" signal
-int Node::signal(){
+int Node::start_signal(){
     //m_wait_lock.lock();
     m_wait=false;
     //m_wait_lock.unlock();
@@ -61,6 +61,9 @@ int Node::start(){
     waitForSignal();
     run();
     m_node_network.send_end_signal();
+    while(!m_close){
+        usleep(100);
+    }
     return 0;
 }
 
@@ -116,15 +119,15 @@ bool Node::get_message(string* message){
     
 }
 
-int Node::close(){
+int Node::disconnect_signal(){
     m_node_network.close();
     m_close=true;
     return 0;
 }
-
+/*
 bool Node::end(){
     return m_close;
-}
+}*/
 
 Node::~Node()
 {

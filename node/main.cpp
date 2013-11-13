@@ -27,9 +27,6 @@ int main(int argc, char*argv [])
         LAKNode node(nodeid);
         node.init();
         node.start();
-        while(!node.end()){
-            usleep(100);
-        }
         //node.close();
     }else{
 

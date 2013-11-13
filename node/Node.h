@@ -34,9 +34,9 @@ class Node
         int init();
         int start();
 
-        int signal();
-        int close();
-        bool end();
+        int start_signal();
+        int disconnect_signal();
+        
         
         bool get_message(string* msg);
         
@@ -54,6 +54,7 @@ class Node
         int parse_quorum();
         int parse_schedule();
         int virtual run()=0;
+        bool end();
         MutexLock m_queue_lock;
         queue<string> m_message_queue;
 };

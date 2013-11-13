@@ -255,11 +255,11 @@ int NodeNetwork::onReceive(char* message,Socket* socket){
     strcpy(buff,message+6);*/
     if(strlen(message)==5){
         if(strcmp("START",message)==0){
-            m_node->signal();
+            m_node->start_signal();
         }
     }else if(strlen(message)==10){
         if(strcmp("DISCONNECT",message)==0){
-            m_node->close();
+            m_node->disconnect_signal();
             cout << "RECEIVE DISCONNECT" << endl;
         }
     }else{
