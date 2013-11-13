@@ -39,7 +39,7 @@ int NodeNetwork::init(){
     //parse config file
 
     //work without switch
-    FILE* fp = fopen("../config/socket.txt","r");
+    FILE* fp = fopen("./config/socket.txt","r");
 
     fscanf(fp,"%d",&m_port);
     fscanf(fp,"%d",&m_num_of_switches);
@@ -59,7 +59,7 @@ int NodeNetwork::init(){
 
     fclose(fp);
     char filename[30];
-    sprintf(filename,"../log/log_node%d.txt",m_node_id);
+    sprintf(filename,"./log/log_node%d.txt",m_node_id);
     m_logfile.open(filename);
 
     m_socket = new Socket();

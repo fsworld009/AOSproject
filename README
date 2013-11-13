@@ -1,0 +1,25 @@
+1.type
+make ds
+to compile dumpswitch
+
+2.type
+make n
+to compile nodes
+
+How to run
+first run ./dumpswitch.out, it will start to listen
+then run ./node.out [nodeid] [algorithm] on each node machine ([algorithm]: 0=ours, 1=Maekawa's)
+each node will connects to the dumpswitch
+
+After all connections are setup, dumpswitch will trigger the nodes to start algorithm
+After computation you can find logs on ./log/ (I only keep the last one for each node and switch)
+
+
+If you want to add/delete nodes or run test on netid machines, edit ./config/socket.txt
+Structure of socket.txt
+[socket port]
+[num of switches] (do not change this one now,always put 1)
+[net machine id of the switch] (0=localhost)
+[num of nodes]
+rest of the file are the net machine id of each node, 0=localhost
+

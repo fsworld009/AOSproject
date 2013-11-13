@@ -17,7 +17,7 @@ bool ListenServer::end(){
 }
 
 int ListenServer::init(){
-        FILE* fp = fopen("../socket.txt","r");
+        FILE* fp = fopen("./config/socket.txt","r");
 
         fscanf(fp,"%d",&m_port);
         fclose(fp);

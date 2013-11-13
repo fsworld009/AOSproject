@@ -20,7 +20,7 @@ DumpSwitch::~DumpSwitch()
 }
 
 int DumpSwitch::init(){
-        FILE* fp = fopen("../config/socket.txt","r");
+        FILE* fp = fopen("./config/socket.txt","r");
 
         fscanf(fp,"%d",&m_port);
         fscanf(fp,"%d",&m_num_of_switches);
@@ -37,7 +37,7 @@ int DumpSwitch::init(){
 
         fclose(fp);
 
-        m_logfile.open("../log/log_dumpserver.txt");
+        m_logfile.open("./log/log_dumpserver.txt");
 
         m_connected = 0;
         m_disconnected=0;
