@@ -45,12 +45,19 @@ int ListenServer::onAccept(Socket* socket){
 int ListenServer::onReceive(char* message,Socket* socket){
     //handle incoming message here
     /*
-    case get node_id:
-    if(m_node_thread ==0){
-        m_node_thread = new NodeThread(node_id)
-    }
     case get all iformation:
+    if(m_node_thread ==0){
+        m_node_thread = new NodeThread(node_id);
+    }
+    case get set_LAK algorithm signal:
+    m_node_thread->set_algorithm(0);
     m_node_thread->start();
+    
+    case get set_Maekawa algorithm signal:
+    m_node_thread->set_algorithm(1);
+    m_node_thread->start();
+     
+    m_node_thread = new Maekawa(node_id);
     
 
     */
@@ -96,7 +103,7 @@ ListenServer::NodeThread::NodeThread(int node_id){
     m_node=0;
 }
 
-/*int ListenServer::NodeThread::set_algorithm(int algorithm){
+int ListenServer::NodeThread::set_algorithm(int algorithm){
     if(m_node != 0){
         delete m_node;
     }
@@ -105,25 +112,16 @@ ListenServer::NodeThread::NodeThread(int node_id){
             m_node=new LAKNode(m_node_id);
             break;
         case 1:
-            //m_node=new MaekawaNode();
+            //m_node=new MaekawaNode(m_node_id);
             break;
         
     }
     
 
-}*/
+}
 
 int ListenServer::NodeThread::run(){
-    m_node=new LAKNode(m_node_id);
     m_node->init();
     m_node->start();
-    //m_node->close();
-    
-    /*
-    delete m_node;
-    m_node=new MaekawaNode(m_node_id);
-    m_node->init();
-    m_node->start();
-    m_node->close();*/
     
 }

@@ -35,7 +35,7 @@ class ListenServer: public ServerSocketEventListener, SocketEventListener
             public:
                 NodeThread(int node_id);
                 virtual int run();
-                //int set_algorithm(int algorithm);
+                int set_algorithm(int algorithm);
             private:
                 int m_node_id;
                 Node* m_node;

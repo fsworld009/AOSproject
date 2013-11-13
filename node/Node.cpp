@@ -9,18 +9,18 @@ using namespace std;
 Node::Node(int node_id): node_id(node_id), m_node_network(this, this->node_id)
 {
     //ctor
-    m_wait=true;
-    m_close=false;
+    m_start_signaled=false;
+    m_disconnect_signaled=false;
 }
 
 //called by NodeNetwork when it received "START" signal
 int Node::start_signal(){
     //m_wait_lock.lock();
-    m_wait=false;
+    m_start_signaled=true;
     //m_wait_lock.unlock();
     return 0;
 }
-
+/*
 int Node::waitForSignal(){
     //m_wait_lock.lock();
     cout << "Waiting for signal..." << endl;
@@ -31,7 +31,7 @@ int Node::waitForSignal(){
     }
     //m_wait_lock.unlock();
     return 0;
-}
+}*/
 
 int Node::init(){
     parse_quorum();
@@ -58,12 +58,16 @@ int Node::init(){
 
 int Node::start(){
     m_node_network.start();
-    waitForSignal();
-    run();
-    m_node_network.send_end_signal();
-    while(!m_close){
+    cout << "Waiting for signal..." << endl;
+    while(!m_start_signaled){
         usleep(100);
     }
+    run();
+    m_node_network.send_end_signal();
+    while(!m_disconnect_signaled){
+        usleep(100);
+    }
+    m_node_network.close();
     return 0;
 }
 
@@ -120,8 +124,7 @@ bool Node::get_message(string* message){
 }
 
 int Node::disconnect_signal(){
-    m_node_network.close();
-    m_close=true;
+    m_disconnect_signaled=true;
     return 0;
 }
 /*

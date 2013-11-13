@@ -48,9 +48,8 @@ class Node
     private:
         NodeNetwork m_node_network;
         //MutexLock m_wait_lock;
-        int waitForSignal();
-        bool m_wait;
-        bool m_close;
+        bool m_start_signaled;
+        bool m_disconnect_signaled;
         int parse_quorum();
         int parse_schedule();
         int virtual run()=0;
