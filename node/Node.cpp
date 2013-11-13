@@ -103,11 +103,14 @@ int Node::receive(string message){
 }
 
 bool Node::get_message(string* message){
+    m_queue_lock.lock();
     if(!m_message_queue.empty()){
         *message =  m_message_queue.front();
         m_message_queue.pop();
+        m_queue_lock.unlock();
         return true;
     }else{
+        m_queue_lock.unlock();
         return false;
     }
     
