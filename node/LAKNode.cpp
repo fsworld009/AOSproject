@@ -35,9 +35,15 @@ LAKNode::~LAKNode()
 int LAKNode::run(){
 	this->timer = 0;
 	this->CS_timer=0;
+    string recv_message;
 	while (this->timer < 300)
 	{
-
+        //handle receive messages
+        while(get_message(&recv_message)){
+            receive_message(recv_message);
+        }
+        
+        
 		this->timer++;
 		if(CS_timer==0 && is_inCS){
             finishCS();

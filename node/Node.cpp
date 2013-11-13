@@ -96,6 +96,23 @@ int Node::parse_schedule(){
 	return 0;
 }
 
+int Node::receive(string message){
+    m_queue_lock.lock();
+    m_message_queue.push(message);
+    m_queue_lock.unlock();
+}
+
+bool Node::get_message(string* message){
+    if(!m_message_queue.empty()){
+        *message =  m_message_queue.front();
+        m_message_queue.pop();
+        return true;
+    }else{
+        return false;
+    }
+    
+}
+
 int Node::close(){
     m_node_network.close();
     m_close=true;

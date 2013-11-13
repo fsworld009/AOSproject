@@ -3,6 +3,7 @@
 #include <set>
 #include <string>
 #include "NodeNetwork.h"
+#include <queue>
 using namespace std;
 
 /*
@@ -26,7 +27,8 @@ class Node
         Node(int node_id);
         virtual ~Node();
         //int virtual receive(int from, int to, int timestamp, string message)=0;
-        int virtual receive_message(string message)=0;
+        //int virtual receive_message(string message)=0;
+        int receive(string message);
 
         int send(unsigned int from, unsigned int to, unsigned int timestamp, string message);
         int init();
@@ -35,6 +37,10 @@ class Node
         int signal();
         int close();
         bool end();
+        
+        bool get_message(string* msg);
+        
+        
     protected:
         const int node_id;
         set<int> quorum_set;
@@ -48,6 +54,8 @@ class Node
         int parse_quorum();
         int parse_schedule();
         int virtual run()=0;
+        MutexLock m_queue_lock;
+        queue<string> m_message_queue;
 };
 
 #endif // NODE_H

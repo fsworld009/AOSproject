@@ -277,7 +277,7 @@ int NodeNetwork::onReceive(char* message,Socket* socket){
         m_logfile << "NodeNetwork:: recv from=" << from << " to=" << to << " timestamp=" << timestamp <<  " msg: " << buff << endl;
         //m_node->receive(from,to,timestamp,buff);
         string msg_string(buff);
-        m_node->receive_message(msg_string);
+        m_node->receive(msg_string);
     }
 
     return 0;

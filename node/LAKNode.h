@@ -32,7 +32,7 @@ class LAKNode: public Node
     public:
         LAKNode(int node_id);
         virtual ~LAKNode();
-        int virtual receive_message(string message);
+        int receive_message(string message);
 
     protected:
     private:
