@@ -45,7 +45,11 @@ int ListenServer::onAccept(Socket* socket){
 int ListenServer::onReceive(char* message,Socket* socket){
     //handle incoming message here
     /*
-    case get all iformation:
+    case get switch id:
+    fork vswitch?
+    
+    
+    case get node id:
     if(m_node_thread ==0){
         m_node_thread = new NodeThread(node_id);
     }
