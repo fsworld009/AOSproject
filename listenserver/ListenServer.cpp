@@ -1,6 +1,8 @@
 #include "ListenServer.h"
 #include <unistd.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <iostream>
 using namespace std;
 
@@ -9,7 +11,8 @@ ListenServer::ListenServer()
     m_end=false;
     //ctor
     m_port=0;
-    m_node_thread=0;
+    //m_node_thread=0;
+    m_accept_socket=0;
 }
 
 bool ListenServer::end(){
@@ -19,7 +22,7 @@ bool ListenServer::end(){
 }
 
 int ListenServer::init(){
-        FILE* fp = fopen("./config/socket.txt","r");
+        FILE* fp = fopen("./config/lserver.txt","r");
 
         fscanf(fp,"%d",&m_port);
         fclose(fp);
@@ -36,7 +39,11 @@ int ListenServer::start(){
 
 int ListenServer::onAccept(Socket* socket){
     //m_accept_socket.push_back(socket);
-    m_accept_socket = socket;
+    //if(m_accept_socket==0){
+        m_accept_socket = socket;
+    //}else{
+        //di
+    //}
 
     socket->registerEventListener(this);
     return 0;
@@ -65,6 +72,17 @@ int ListenServer::onReceive(char* message,Socket* socket){
     
 
     */
+    //test
+    if(strncmp(message,"DSWITCH",6)==0){
+        system("./dumpswitch.out");
+    }else if(strncmp(message,"NODE ",5)==0){
+        int nodeid=0,algorithm=0;
+        sscanf(message+5,"%d %d",&nodeid,&algorithm);
+        char buff[20];
+        sprintf(buff,"./node.out %d %d",nodeid,algorithm);
+        system(buff);
+    }
+    
     return 0;
 }
 
@@ -101,7 +119,7 @@ ListenServer::~ListenServer()
     //dtor
     close();
 }
-
+/*
 ListenServer::NodeThread::NodeThread(int node_id){
     m_node_id = node_id;
     m_node=0;
@@ -128,4 +146,4 @@ int ListenServer::NodeThread::run(){
     m_node->init();
     m_node->start();
     
-}
+}*/

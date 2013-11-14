@@ -92,7 +92,7 @@ int Node::parse_quorum(){
 
 int Node::parse_schedule(){
     char filepath[30];
-    sprintf(filepath,"./config/schedule%d.txt",node_id);
+    sprintf(filepath,"./config/config%d.txt",node_id);
 	ifstream ifs(filepath, ios::in);
 	string str;
 	while (getline(ifs, str))
