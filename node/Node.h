@@ -31,7 +31,7 @@ class Node
         int receive(string message);
 
         int send(unsigned int from, unsigned int to, unsigned int timestamp, string message);
-        int init();
+        int virtual init();
         int start();
 
         int start_signal();

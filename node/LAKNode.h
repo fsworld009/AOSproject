@@ -33,10 +33,11 @@ class LAKNode: public Node
         LAKNode(int node_id);
         virtual ~LAKNode();
         int receive_message(string message);
-
+        int virtual init();
     protected:
     private:
         int seq;
+        
         int virtual run();
         int token_holder;
         int expt_resp;

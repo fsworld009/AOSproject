@@ -35,12 +35,13 @@ int Node::waitForSignal(){
 }*/
 
 int Node::init(){
+    cout << "LAKNode::init" << endl;
     parse_quorum();
     parse_schedule();
 
 
     //print set
-    /*
+    /*cout << "CS TIME=" << CS_time << endl;
     set<int>::iterator iter;
     for (iter = quorum_set.begin(); iter != quorum_set.end(); iter++)
     {
