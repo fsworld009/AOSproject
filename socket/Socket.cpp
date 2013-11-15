@@ -53,9 +53,9 @@ int Socket::connectHost(char* host,int port){
 
     bzero((char *) &server_addr, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
-    server = gethostbyname(host);
+    server = gethostbyname(host);   //gethostname only works with IPv4
     if(server==0){
-        cout << "Socket: cannot find host name" << server << endl;
+        cout << "Socket: cannot find host name " << server << endl;
         return 0;
     }
     bcopy((char *)server->h_addr,(char *)&server_addr.sin_addr.s_addr,server->h_length);
@@ -66,7 +66,7 @@ int Socket::connectHost(char* host,int port){
         cout << "Socket: socket connect error" << endl;
         return 0;
     }else{
-        cout <<"Socket: connected to" << host << endl;
+        cout <<"Socket: connected to " << host << endl;
         strcpy(m_host,host);
         if(m_event_listener != 0){
             m_event_listener->onConnect(this);

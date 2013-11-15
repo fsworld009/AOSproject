@@ -28,10 +28,8 @@ int ServerSocket::init(int port){
     bzero((char *) &m_addr, sizeof(m_addr));
     m_addr.sin_family = AF_INET;
     hostent *server = 0;
-    server = gethostbyname("localhost");
-    bcopy((char *)server->h_addr,
-         (char *)&m_addr.sin_addr.s_addr,
-         server->h_length);
+    server = gethostbyname("localhost");    //gethostname only works with IPv4
+    bcopy((char *)server->h_addr,(char *)&m_addr.sin_addr.s_addr,server->h_length);
     m_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     m_addr.sin_port = htons(port);
 
