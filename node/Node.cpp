@@ -11,6 +11,7 @@ Node::Node(int node_id): node_id(node_id), m_node_network(this, this->node_id)
     //ctor
     m_start_signaled=false;
     m_disconnect_signaled=false;
+    CS_time=0;
 }
 
 //called by NodeNetwork when it received "START" signal
@@ -95,6 +96,8 @@ int Node::parse_schedule(){
     sprintf(filepath,"./config/config%d.txt",node_id);
 	ifstream ifs(filepath, ios::in);
 	string str;
+    getline(ifs, str);
+    CS_time = atoi(str.c_str());
 	while (getline(ifs, str))
 	{
 		time_schedule.insert(atoi(str.c_str()));

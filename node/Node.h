@@ -43,6 +43,7 @@ class Node
         
     protected:
         const int node_id;
+        int CS_time;
         set<int> quorum_set;
         set<int> time_schedule;
     private:

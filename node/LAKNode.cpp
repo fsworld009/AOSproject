@@ -284,7 +284,7 @@ void LAKNode::send_relay(int from, int seq)
 void LAKNode::accessCS()
 {
     this->is_inCS = true;
-    this->CS_timer = 10;
+    this->CS_timer = CS_time;
 	cout << "The node is entering CS now ..." << endl;
 
 
