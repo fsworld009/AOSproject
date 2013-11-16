@@ -90,6 +90,7 @@ int main(int argc, char *argv[])
             char buff[LSERVER_BUFFER_SIZE];
             bzero(buff,LSERVER_BUFFER_SIZE);
 			recv(client_sock, buff, LSERVER_BUFFER_SIZE, 0);
+            printf("RECV %s\n",buff);
             
             /*case get '0'
             if(strcpy(buff,"0")==0){
