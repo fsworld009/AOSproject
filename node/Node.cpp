@@ -37,7 +37,6 @@ int Node::waitForSignal(){
 }*/
 
 int Node::init(){
-    cout << "LAKNode::init" << endl;
     parse_quorum();
     parse_schedule();
 

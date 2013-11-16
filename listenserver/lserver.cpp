@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <netdb.h>
 #define LSERVER_BUFFER_SIZE 1024
-#define LSERVER_PORT 6789
+#define LSERVER_PORT 4567
 
 enum ROLE{NODE, SWITCH} ;
 
@@ -26,11 +26,11 @@ int get_netid(){
 }
 
 ROLE get_role(int netid){
-    ROLE role;
-    /*
-        open config file, findout my role
-    */
-    return role;
+    if(netid%5==0){
+        return SWITCH;
+    }else{
+        return NODE;
+    }
 }
 
 int main(int argc, char *argv[])
@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     
     ROLE role = get_role(netid);
     
-    struct sockaddr_in server_addr, client_addr;
+    struct sockaddr_in server_addr/*, client_addr*/;
 	unsigned int server_sock, client_sock, ids;
 	int addr_len, port, net_status;
 
@@ -54,59 +54,76 @@ int main(int argc, char *argv[])
 	//net_status = strtol( argv[1], NULL, 10 );
 	port = LSERVER_PORT;
 
-	//pthread_attr_t attr;
-	//pthread_t threads;
+	pthread_attr_t attr;
+	pthread_t threads;
 
     
-    int option=1;
-    setsockopt(server_sock,SOL_SOCKET,SO_REUSEADDR,(char*)&option,sizeof(option));
+    //int option=1;
+    
     
 	server_sock = socket(AF_INET, SOCK_STREAM, 0);
+    
+    //int option=1;
+    //setsockopt(server_sock,SOL_SOCKET,SO_REUSEADDR,(char*)&option,sizeof(option));
+    
 	 
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(port);
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	bind(server_sock, (struct sockaddr *)&server_addr, sizeof(server_addr));
  
+ 
+    sockaddr client_addr;
+    socklen_t client_len = sizeof(client_addr);
+ 
 	if (listen(server_sock, 100) != 0)
 	{
 		printf("Failed to listen to port %d", port);
 		return 1;
 	}else{
-        printf("ListenServer:: start to listen\n");
+        printf("ListenServer:: start to listen to port %d\n",port);
     }
 
-	//pthread_attr_init(&attr);
+	pthread_attr_init(&attr);
 
 	pid_t pid;
 
 	while(1)
 	{
-		client_sock = accept(server_sock, (struct sockaddr *)&client_addr, (socklen_t*) &addr_len);
+		client_sock = accept(server_sock, &client_addr, &client_len);
 		pid = fork();
-
+        printf("%d\n",pid);
 		if (pid > 0)
 		{
+            printf("pid>0\n");
             char buff[LSERVER_BUFFER_SIZE];
-            bzero(buff,LSERVER_BUFFER_SIZE);
-			recv(client_sock, buff, LSERVER_BUFFER_SIZE, 0);
-            printf("RECV %s\n",buff);
-            
-            /*case get '0'
-            if(strcpy(buff,"0")==0){
-                if(role==NODE){
-                    get node number;
-                    system("./node.out")
+            int result;
+            while(1){
+                bzero(buff,LSERVER_BUFFER_SIZE);
+                result = read(client_sock, buff, LSERVER_BUFFER_SIZE);
+                //recv(client_sock, buffer, 1024, 0);
+                if(result ==-1 || result == 0){
+                    printf("socket error\n");
                 }else{
-                    system("./vswitch.out");
+                    printf("RECV %s\n",buff);
+                    
+                    
+                    if(strcmp(buff,"0")==0 || strcmp(buff,"1")==0){
+                        int algorithm = atoi(buff);
+                        if(role==NODE){
+                            char buff[30];
+                            printf(buff,"./node.out %d %d",netid, algorithm);
+                            system(buff);
+                        }else{
+                            system("./vswitch.out");
+                        }
+                    }
                 }
             }
-            
-            
-            */
-            
 			return 0;
-		}
+		}else{
+            printf("pid=0\n");
+        }
 
 	}
 

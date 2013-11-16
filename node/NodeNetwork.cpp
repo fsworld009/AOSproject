@@ -257,10 +257,10 @@ int NodeNetwork::onReceive(char* message,Socket* socket){
         if(strcmp("START",message)==0){
             m_node->start_signal();
         }
-    }else if(strlen(message)==10){
-        if(strcmp("DISCONNECT",message)==0){
+    }else if(strlen(message)==3){
+        if(strcmp("END",message)==0){
             m_node->disconnect_signal();
-            cout << "RECEIVE DISCONNECT" << endl;
+            cout << "RECEIVE END" << endl;
         }
     }else{
 
