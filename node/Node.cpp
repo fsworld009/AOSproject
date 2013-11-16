@@ -131,6 +131,16 @@ int Node::disconnect_signal(){
     m_disconnect_signaled=true;
     return 0;
 }
+
+int Node::send_access_cs_msg(){
+    m_node_network.send(node_id,255,timer,(char*)"ENTER CS");
+}
+
+
+int Node::send_finish_cs_msg(){
+    m_node_network.send(node_id,255,timer,(char*)"FINISH CS");
+}
+
 /*
 bool Node::end(){
     return m_close;

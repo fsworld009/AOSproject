@@ -43,8 +43,6 @@ class LAKNode: public Node
         int expt_resp;
         bool is_inCS;
         bool has_token;
-        unsigned int timer;
-        unsigned int CS_timer;
         set<int> acked_node;
         set<LAKNode::Message> token_list;
 

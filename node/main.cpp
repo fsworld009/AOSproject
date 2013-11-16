@@ -2,17 +2,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "LAKNode.h"
+#include "MAKNode.h"
 
 using namespace std;
 
 int main(int argc, char*argv [])
 {
-    /*NodeNetwork nodeNetwork(0);
-    nodeNetwork.start();
 
-    char c;
-    cin >> c;
-    nodeNetwork.close();*/
     if(argc < 3){
         cout << "argument: [node_id] [algorithm]" << endl;
         cout << "[algorithm]: 0=LAK 1=Maekawa" << endl;
@@ -29,7 +25,9 @@ int main(int argc, char*argv [])
         node.start();
         //node.close();
     }else{
-
+        MAKNode node(nodeid);
+        node.init();
+        node.start();
     }
 
     return 0;

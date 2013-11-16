@@ -94,7 +94,6 @@ int LAKNode::run(){
 //Message Handlers
 void LAKNode::send_request()
 {
-    cout << "send request" << endl;
 	if (this->has_token)
 	{
 		accessCS();
@@ -332,6 +331,7 @@ void LAKNode::accessCS()
     this->is_inCS = true;
     this->CS_timer = CS_time;
 	cout << "The node is entering CS now ..." << endl;
+    send_access_cs_msg();
 
 
 }
@@ -339,6 +339,7 @@ void LAKNode::accessCS()
 void LAKNode::finishCS()
 {
     cout << "The node is exiting CS now ..." << endl;
+    send_finish_cs_msg();
 	if (token_list.empty() != true)
 	{
         //token_list.erase(token_list.begin());

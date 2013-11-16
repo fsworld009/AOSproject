@@ -18,7 +18,11 @@ enum MessageType
         RECEIVE,
         ACK,
         RELAY,
-        TOKEN
+        TOKEN,
+		LOCK,
+		FAIL,
+		INQUIRE,
+		RELINQUISH
     };
 
 class Node
@@ -43,9 +47,13 @@ class Node
         
     protected:
         const int node_id;
-        int CS_time;
+        unsigned int CS_time;
         set<int> quorum_set;
         set<int> time_schedule;
+        unsigned int timer;
+        unsigned int CS_timer;
+        int send_access_cs_msg();
+        int send_finish_cs_msg();
     private:
         NodeNetwork m_node_network;
         //MutexLock m_wait_lock;
