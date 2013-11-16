@@ -1,0 +1,10 @@
+num_nodes=6
+net_reliable=1
+net_congested=0
+res_alloc_time=1:1:20
+request_start
+(1,1:0:0)
+(2,0:0:200)
+(1,1:30:0)
+(10,30:0:0)
+request_end

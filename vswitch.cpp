@@ -12,16 +12,6 @@
 #define PEND_CONNECTIONS (100)
 using namespace std;
 
-typedef struct req
-		//each process will only be handling messages from a single node
-		//get a list of when to expect messages and whether to drop them
-{
-	struct req* next;
-	struct req* prev;
-	int time;
-	int drop;
-} req;
-
 int forward (char* msg, char* to_addr)
 {
 	int num = 6789;	
@@ -63,44 +53,6 @@ int forward (char* msg, char* to_addr)
 	return 0;
 }
 
-req* read_config(unsigned int node_num)
-{
-	char buffer[1024];
-	char config_name[1024];
-	ifstream config_file;
-	
-	if ( node_num < 10)
-	{
-		sprintf(config_name, "net0%d", node_num);
-	}
-	else
-	{
-		sprintf(config_name, "net%d", node_num);
-	}
-	
-	req* head = (req*) malloc(sizeof(req));
-	memset(head, 0x00, sizeof(req));
-	
-	req* current = head;
-	
-	config_file.open(config_name, ios::in | ios::binary);
-	memset(buffer, 0x00, sizeof(buffer));
-	
-	config_file >> buffer;
-	
-	while( buffer[0] != 0)
-	{
-		current->drop = (int) buffer[0];
-		current->time = (int) buffer[1];
-		current->next = (req*) malloc(sizeof(req));
-		current->next->prev = current;
-		current = current->next;
-		config_file >> buffer;
-	}
-	
-	return head;
-}
-
 void handle( unsigned int client_sock, int net_status)
 {
 	char buffer[1024];
@@ -111,7 +63,8 @@ void handle( unsigned int client_sock, int net_status)
 	
 	memset(buffer, 0x00, sizeof(buffer));
 	recv(client_sock, buffer, 1024, 0);
-	node_num = buffer[0];
+	node_num = strtol(buffer, NULL, 10);
+	
 	if (node_num > 45 || node_num == 0)
 	{
 		send(client_sock, "1", 1, 0); //Invalid Node Number
@@ -121,30 +74,45 @@ void handle( unsigned int client_sock, int net_status)
 	
 	if( node_num < 10)
 	{
-		sprintf(log_name, "log0%d.txt", node_num);
+		sprintf(log_name, "log0%d", node_num);
 	}
 	else
 	{
-		sprintf(log_name, "log%d.txt", node_num);
+		sprintf(log_name, "log%d", node_num);
 	}
 	
 	log_file.open(log_name, ios::out | ios::binary);
-	req* current = read_config(node_num);
 	
 	
 	while (1)
 	{
 		memset(buffer, 0x00, 1024);
-		recv(client_sock, buffer, 1024, 0);
+		int msg_length = recv(client_sock, buffer, 1024, 0);
 		
 		unsigned int t = buffer[0] & 0xff;
 		log_file << buffer << endl;
+		log_file << msg_length << endl;
 		
 		if (t == 255) //Control message
 		{
-			//all messages are logged. These are only logged
+			send(client_sock, "0", 1, 0);
+			continue; //all messages are logged. These are only logged
 		}
-		else if (t > 45 || t == 0) //If "To" is invalid, exit
+		
+		else if( net_status == 3 && (rand() % 10) == 0 )
+		{
+			//log_file << "dropped" << endl;
+			send(client_sock, "0", 1, 0);
+			continue;
+		}
+		
+		else if ( net_status == 2 )
+		{
+			sleep( rand() % 11 + 5); //sleep between 5 and 15 seconds
+		}
+		
+		
+		if (t > 45 || t == 0) //If "To" is invalid, exit
 		{
 			send(client_sock, "0", 1, 0); // 0 means no problem, there's never a problem exiting
 			break;
@@ -173,15 +141,33 @@ int main(int argc, char *argv[])
 	struct sockaddr_in server_addr, client_addr;
 	unsigned int server_sock, client_sock, ids;
 	int addr_len, port, net_status;
-
-	if (argc != 2)
+	
+	char hostname[1024];
+	gethostname(hostname, sizeof(hostname));
+	
+	char char_stat[3];
+	char_stat[0] = hostname[3];
+	char_stat[1] = hostname[4];
+	char_stat[2] = 0x00;
+	int node_num = strtol( char_stat, NULL, 10);
+	
+	char cfile[32];
+	if(node_num < 10)
 	{
-		printf("\nusage: %s <network status>\n\n", argv[0]);
-		exit(-1);
+		sprintf(cfile, "config0%d", node_num);
+	}
+	else
+	{
+		sprintf(cfile, "config%d", node_num);
 	}
 	
-	net_status = strtol( argv[1], NULL, 10 );
-	port = 4567;
+	ifstream ifile(cfile);
+	ifile >> net_status;
+	ifile.close();
+		//1 for reliable uncongested
+		//2 for reliable congested
+		//3 for unreliable
+	port = 6789;
 
 	pthread_attr_t attr;
 	pthread_t threads;

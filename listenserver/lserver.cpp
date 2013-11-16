@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
                             printf(buff,"./node.out %d %d",netid, algorithm);
                             system(buff);
                         }else{
-                            system("./switch 0");
+                            system("./switch");
                         }
                     }else if(strcmp(buff,"END")==0){
                         close(client_sock);
