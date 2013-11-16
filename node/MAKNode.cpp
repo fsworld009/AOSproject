@@ -29,26 +29,26 @@ MAKNode::~MAKNode()
 
 //initiate requests according to the time schedule
 int MAKNode::run(){
-	this->timer = 0;
-	this->CS_timer=0;
+	this->timer = 0.0;
+	this->CS_timer=0.0;
     string recv_message;
-    
+
 	while (this->timer < 300)
 	{
         //handle receive messages
         while(get_message(&recv_message)){
             receive_message(recv_message);
         }
-        
-        
-		this->timer++;
+
+
+		this->timer+=1.0;
 		if(CS_timer==0 && is_inCS){
             finishCS();
 		}else if(CS_timer>0){
-            CS_timer--;
+            CS_timer-=1.0;
 		}
 		//cout << CS_timer << endl;
-		set<int>::iterator iter = time_schedule.find(this->timer);
+		set<unsigned long>::iterator iter = time_schedule.find(this->timer);
 		if (iter != time_schedule.end())
 		{
 			this->send_request();
@@ -89,6 +89,7 @@ void MAKNode::send_request()
 		if ((*iter) != node_id)
 		{
 			msg.to = (*iter);
+			send_request_cs_msg();
 			send(this->node_id, (*iter), timer, message_string(msg));
 		}
 	}
@@ -166,7 +167,7 @@ void MAKNode::receive_locked(MAKNode::Message msg)
 void MAKNode::receive_inquiry(MAKNode::Message msg)
 {
 	//if the process is in CS, just ignore the inquiry.
-	if (this->is_inCS = true)
+	if (this->is_inCS == true)
 		return;
 
 	//if the process is not in CS, first we check whether there is any fail response.
@@ -187,7 +188,7 @@ void MAKNode::receive_inquiry(MAKNode::Message msg)
 void MAKNode::receive_failed(MAKNode::Message msg)
 {
 	this->response_map.insert(make_pair(msg.from, msg.type));
-	
+
 	set<MAKNode::Message>::iterator iter;
 	for (iter = this->inquiry_list.begin(); iter != this->inquiry_list.end(); iter ++)
 	{
@@ -299,7 +300,7 @@ void MAKNode::finishCS()
 			send_release((*iter));
 		}
 	}
-    
+
     this->is_inCS = false;
 }
 
@@ -307,7 +308,7 @@ string MAKNode::message_string(Message msg)
 {
 	string str = "";
 	stringstream ss;
-	
+
 	switch (msg.type)
 	{
 	case REQUEST:

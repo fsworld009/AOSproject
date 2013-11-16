@@ -32,7 +32,6 @@ public:
 
 protected:
 private:
-	int timer;
 	
 	int seq;
 	bool is_locked;

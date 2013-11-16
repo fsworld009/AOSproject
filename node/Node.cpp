@@ -11,7 +11,9 @@ Node::Node(int node_id): node_id(node_id), m_node_network(this, this->node_id)
     //ctor
     m_start_signaled=false;
     m_disconnect_signaled=false;
-    CS_time=0;
+    CS_time=0.0;
+    timer=0.0;
+    CS_timer=0.0;
 }
 
 //called by NodeNetwork when it received "START" signal
@@ -98,10 +100,10 @@ int Node::parse_schedule(){
 	ifstream ifs(filepath, ios::in);
 	string str;
     getline(ifs, str);
-    CS_time = atoi(str.c_str());
+    CS_time = atol(str.c_str());
 	while (getline(ifs, str))
 	{
-		time_schedule.insert(atoi(str.c_str()));
+		time_schedule.insert(atol(str.c_str()));
 	}
     ifs.close();
 	return 0;
@@ -111,6 +113,7 @@ int Node::receive(string message){
     m_queue_lock.lock();
     m_message_queue.push(message);
     m_queue_lock.unlock();
+    return 0;
 }
 
 bool Node::get_message(string* message){
@@ -124,7 +127,7 @@ bool Node::get_message(string* message){
         m_queue_lock.unlock();
         return false;
     }
-    
+
 }
 
 int Node::disconnect_signal(){
@@ -133,12 +136,20 @@ int Node::disconnect_signal(){
 }
 
 int Node::send_access_cs_msg(){
-    m_node_network.send(node_id,255,timer,(char*)"ENTER CS");
+
+    m_node_network.send(node_id,255,timer,(char*)"1");
+    return 0;
 }
 
 
 int Node::send_finish_cs_msg(){
-    m_node_network.send(node_id,255,timer,(char*)"FINISH CS");
+    m_node_network.send(node_id,255,timer,(char*)"2");
+    return 0;
+}
+
+int Node::send_request_cs_msg(){
+    m_node_network.send(node_id,255,timer,(char*)"3");
+    return 0;
 }
 
 /*

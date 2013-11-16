@@ -36,13 +36,15 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="main.cpp" />
 		<Unit filename="node/LAKNode.cpp" />
 		<Unit filename="node/LAKNode.h" />
+		<Unit filename="node/MAKNode.cpp" />
+		<Unit filename="node/MAKNode.h" />
 		<Unit filename="node/Node.cpp" />
 		<Unit filename="node/Node.h" />
 		<Unit filename="node/NodeNetwork.cpp" />
 		<Unit filename="node/NodeNetwork.h" />
+		<Unit filename="node/main.cpp" />
 		<Unit filename="socket/ServerSocket.cpp" />
 		<Unit filename="socket/ServerSocket.h" />
 		<Unit filename="socket/ServerSocketEventListener.cpp" />

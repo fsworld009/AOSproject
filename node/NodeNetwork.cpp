@@ -65,18 +65,18 @@ int NodeNetwork::init(){
     m_socket = new Socket();
     m_socket->registerEventListener(this);
     return 0;
-    
+
 }
 
 
 
-int NodeNetwork::send(unsigned int from, unsigned int to, unsigned int timestamp, char* message){
+int NodeNetwork::send(unsigned int from, unsigned int to, unsigned long timestamp, char* message){
     char buff[SOCKET_MAX_BUFFER_SIZE];
     bzero(buff,SOCKET_MAX_BUFFER_SIZE);
     memcpy(buff,&to,1);
     memcpy(buff+1,&from,1);
-    memcpy(buff+2,&timestamp,4);
-    memcpy(buff+6,message,SOCKET_MAX_BUFFER_SIZE-6);
+    memcpy(buff+2,&timestamp,sizeof(long));
+    memcpy(buff+2+sizeof(long),message,SOCKET_MAX_BUFFER_SIZE-2-sizeof(long));
 
     //unsigned int x1=0,x2=0,x3=0;
     //memcpy(&x1,buff,1);
@@ -267,11 +267,11 @@ int NodeNetwork::onReceive(char* message,Socket* socket){
         unsigned int from=0,to=0,timestamp=0;
         memcpy(&to,message,1);
         memcpy(&from,message+1,1);
-        memcpy(&timestamp,message+2,4);
+        memcpy(&timestamp,message+2,sizeof(long));
 
         char buff[SOCKET_MAX_BUFFER_SIZE];
         bzero(buff,SOCKET_MAX_BUFFER_SIZE);
-        memcpy(&buff,message+6,SOCKET_MAX_BUFFER_SIZE-6);
+        memcpy(&buff,message+2+sizeof(long),SOCKET_MAX_BUFFER_SIZE-2-sizeof(long));
 
         cout << "NodeNetwork:: recv from=" << from << " to=" << to << " timestamp=" << timestamp <<  " msg: " << buff << endl;
         m_logfile << "NodeNetwork:: recv from=" << from << " to=" << to << " timestamp=" << timestamp <<  " msg: " << buff << endl;

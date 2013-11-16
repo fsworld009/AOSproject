@@ -40,20 +40,21 @@ class Node
 
         int start_signal();
         int disconnect_signal();
-        
-        
+
+
         bool get_message(string* msg);
-        
-        
+
+
     protected:
         const int node_id;
-        unsigned int CS_time;
+        unsigned long CS_time;
         set<int> quorum_set;
-        set<int> time_schedule;
-        unsigned int timer;
-        unsigned int CS_timer;
+        set<unsigned long> time_schedule;
+        unsigned long timer;
+        unsigned long CS_timer;
         int send_access_cs_msg();
         int send_finish_cs_msg();
+        int send_request_cs_msg();
     private:
         NodeNetwork m_node_network;
         //MutexLock m_wait_lock;

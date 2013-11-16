@@ -17,7 +17,6 @@ LAKNode::~LAKNode()
 }
 
 int LAKNode::init(){
-    cout << "LAKNode::init" << endl;
     this->quorum_set.clear();
     this->time_schedule.clear();
     Node::init();
@@ -32,7 +31,7 @@ int LAKNode::init(){
 		this->token_holder = 1;
 
 		this->token_list.clear();
-		
+
 		this->acked_node.clear();
 
 		this->is_inCS = false;
@@ -56,31 +55,33 @@ int LAKNode::init(){
 
 
 	}
+	return 0;
 }
 
 int LAKNode::run(){
-	this->timer = 0;
-	this->CS_timer=0;
+	this->timer = 0.0;
+	this->CS_timer=0.0;
     string recv_message;
-    
+
 	while (this->timer < 300)
 	{
         //handle receive messages
         while(get_message(&recv_message)){
             receive_message(recv_message);
         }
-        
-        
-		this->timer++;
+
+
+		this->timer+=1.0;
 		if(CS_timer==0 && is_inCS){
             finishCS();
 		}else if(CS_timer>0){
-            CS_timer--;
+            CS_timer-=1.0;
 		}
 		//cout << CS_timer << endl;
-		set<int>::iterator iter = time_schedule.find(this->timer);
+		set<unsigned long>::iterator iter = time_schedule.find(this->timer);
 		if (iter != time_schedule.end())
 		{
+            send_request_cs_msg();
 			this->send_request();
 		}
 		usleep(1000);
@@ -418,11 +419,10 @@ LAKNode::Message LAKNode::string_message(string msgstr)
 
 		while (msgstr.length() > 1)
 		{
-            cout << msgstr << endl;
 			Message rq;
                 rq.type = (MessageType) atoi(msgstr.substr(0, msgstr.find_first_of(" ")).c_str());
                 msgstr = msgstr.substr(msgstr.find_first_of(" ") + 1);
-                
+
                 rq.from = atoi(msgstr.substr(0, msgstr.find_first_of(" ")).c_str());
                 msgstr = msgstr.substr(msgstr.find_first_of(" ") + 1);
 
