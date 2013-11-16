@@ -5,6 +5,7 @@
 #include "../socket/Socket.h"
 #include "../socket/ServerSocketEventListener.h"
 #include "../socket/SocketEventListener.h"
+#define NODE_SOCKET_PORT 6789
 
 /*
 Yu-Chun Lee, yxl122130 11.8.2013

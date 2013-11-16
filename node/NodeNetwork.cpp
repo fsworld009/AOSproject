@@ -39,7 +39,7 @@ int NodeNetwork::init(){
     //parse config file
 
     //work without switch
-    FILE* fp = fopen("./config/socket.txt","r");
+    /*FILE* fp = fopen("./config/socket.txt","r");
 
     fscanf(fp,"%d",&m_port);
     fscanf(fp,"%d",&m_num_of_switches);
@@ -49,15 +49,23 @@ int NodeNetwork::init(){
         if(i==(m_node_id-1)/4){
             break;
         }
-    }
+    }*/
+    
+    m_port = NODE_SOCKET_PORT;
+    cout << "Node id is " << m_node_id << endl;
+    m_switch_netid = 5*((m_node_id/5)+1);
+    cout << "Switch net id is " << m_switch_netid << endl;
+    char buff[30];
+    getHostName(m_switch_netid,buff);
+    cout << "Switch address: " << buff << endl;
 
-    fscanf(fp,"%d",&m_num_of_nodes);
+    //fscanf(fp,"%d",&m_num_of_nodes);
     /*m_node_netid = new int[m_num_of_nodes];
     for(int i=0;i<m_num_of_nodes;i++){
         fscanf(fp,"%d",&m_node_netid[i]);
     }*/
 
-    fclose(fp);
+    //fclose(fp);
     char filename[30];
     sprintf(filename,"./log/log_node%d.txt",m_node_id);
     m_logfile.open(filename);
@@ -233,7 +241,7 @@ int NodeNetwork::onDisconnect(ServerSocket* serverSocket){
 
 int NodeNetwork::onConnect(Socket* socket){
     char buff[10];
-    sprintf(buff,"NODE %d",m_node_id);
+    sprintf(buff,"%d",m_node_id);
     socket->send(buff);
     return 0;
 }

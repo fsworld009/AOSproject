@@ -63,8 +63,8 @@ int main(int argc, char *argv[])
     
 	server_sock = socket(AF_INET, SOCK_STREAM, 0);
     
-    //int option=1;
-    //setsockopt(server_sock,SOL_SOCKET,SO_REUSEADDR,(char*)&option,sizeof(option));
+    int option=1;
+    setsockopt(server_sock,SOL_SOCKET,SO_REUSEADDR,(char*)&option,sizeof(option));
     
 	 
 	server_addr.sin_family = AF_INET;
@@ -92,10 +92,10 @@ int main(int argc, char *argv[])
 	{
 		client_sock = accept(server_sock, &client_addr, &client_len);
 		pid = fork();
-        printf("%d\n",pid);
+        //printf("%d\n",pid);
 		if (pid > 0)
 		{
-            printf("pid>0\n");
+            //printf("pid>0\n");
             char buff[LSERVER_BUFFER_SIZE];
             int result;
             while(1){
@@ -104,6 +104,9 @@ int main(int argc, char *argv[])
                 //recv(client_sock, buffer, 1024, 0);
                 if(result ==-1 || result == 0){
                     printf("socket error\n");
+                    close(client_sock);
+                    close(server_sock);
+                    return 0;
                 }else{
                     printf("RECV %s\n",buff);
                     
@@ -115,14 +118,18 @@ int main(int argc, char *argv[])
                             printf(buff,"./node.out %d %d",netid, algorithm);
                             system(buff);
                         }else{
-                            system("./vswitch.out");
+                            system("./switch 0");
                         }
+                    }else if(strcmp(buff,"END")==0){
+                        close(client_sock);
+                        close(server_sock);
+                        return 0;
                     }
                 }
             }
 			return 0;
 		}else{
-            printf("pid=0\n");
+            //printf("pid=0\n");
         }
 
 	}
