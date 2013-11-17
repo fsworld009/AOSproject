@@ -5,7 +5,7 @@
 #include "../thread/Thread.h"
 #include "Socket.h"
 
-
+class NodeNetwork;
 /*
 Yu-Chun Lee yxl122130
 10.26.2013
@@ -18,7 +18,7 @@ class ServerSocketEventListener;
 class ServerSocket
 {
     public:
-        ServerSocket();
+        ServerSocket(NodeNetwork* node_network);
         int init(int port);
         int start();
         virtual ~ServerSocket();
@@ -49,6 +49,7 @@ class ServerSocket
         //test only
         //Socket* m_accepted_socket;
         ServerSocketEventListener* m_event_listener;
+        NodeNetwork* m_node_network;
 };
 
 #endif // SERVERSOCKET_H

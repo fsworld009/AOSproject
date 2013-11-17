@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include <linux/socket.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
 #include <stdlib.h>
@@ -64,7 +64,7 @@ void handle( unsigned int client_sock, int net_status)
 	
 	memset(buffer, 0x00, sizeof(buffer));
    // cerr <<"recv" << endl;
-	recv(client_sock, buffer, 1024, 0);
+	read(client_sock, buffer, 1024);
     //cerr <<"recv end" << endl;
 	node_num = strtol(buffer, NULL, 10);
     
@@ -72,10 +72,10 @@ void handle( unsigned int client_sock, int net_status)
 	
 	if (node_num > 45 || node_num == 0)
 	{
-		send(client_sock, "1", 1, 0); //Invalid Node Number
+		//send(client_sock, "1", 1, 0); //Invalid Node Number
 		return;
 	}
-	send(client_sock, "0", 1, 0); //respond that node number is valid
+	//send(client_sock, "0", 1, 0); //respond that node number is valid
 	
 	if( node_num < 10)
 	{
@@ -91,8 +91,9 @@ void handle( unsigned int client_sock, int net_status)
 	
 	while (1)
 	{
-		memset(buffer, 0x00, 1024);
-		int msg_length = recv(client_sock, buffer, 1024, 0);
+		//memset(buffer, 0x00, 1024);
+        bzero(buffer,1024);
+		int msg_length = read(client_sock, buffer, 1024);
 		if( msg_length == 0 )
 		{
 			cout << "Peer Shutdown" << endl;
@@ -117,14 +118,14 @@ void handle( unsigned int client_sock, int net_status)
 		
 		if (t == 255) //Control message
 		{
-			send(client_sock, "0", 1, 0);
+			//send(client_sock, "0", 1, 0);
 			continue; //all messages are logged. These are only logged
 		}
 		
 		else if( net_status == 3 && (rand() % 10) == 0  && t != 44)
 		{
 			//log_file << "dropped" << endl;
-			send(client_sock, "0", 1, 0);
+			//send(client_sock, "0", 1, 0);
 			continue;
 		}
 		
@@ -136,7 +137,7 @@ void handle( unsigned int client_sock, int net_status)
 		
 		if (t > 45 || t == 0) //If "To" is invalid, exit
 		{
-			send(client_sock, "0", 1, 0); // 0 means no problem, there's never a problem exiting
+			//send(client_sock, "0", 1, 0); // 0 means no problem, there's never a problem exiting
 			break;
 		}
 		else if (t < 10) //format "To" Hostname
@@ -147,11 +148,11 @@ void handle( unsigned int client_sock, int net_status)
 		{
 			sprintf(to_addr, "net%d.utdallas.edu", buffer[0]);
 		}
-        cerr << "Forwarding to: " << to_addr << endl; //DELTE THIS
+        //cerr << "Forwarding to: " << to_addr << endl; //DELTE THIS
 		//log_file << "Forwarding to: " << to_addr << endl; //DELTE THIS
         //log_file.close();       //temp code by Andy
 		int temp = forward(buffer, to_addr);
-		send(client_sock, &temp, 4, 0);
+		//send(client_sock, &temp, 4, 0);
 	}
 
 	close(client_sock);

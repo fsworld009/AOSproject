@@ -196,7 +196,8 @@ int Socket::SendThread::run(){
                 delete[] msg;
             }
             m_parent->m_queue_lock.unlock();
-        usleep(100);
+        //usleep(100);
+        
     }
     //cout << "end send thread" << endl;
     return 0;
@@ -228,7 +229,8 @@ int Socket::ReceiveThread::run(){
             m_parent->m_event_listener->onReceive(temp,m_parent);
             delete[] temp;
         }
-        usleep(100);
+        //usleep(100);
+        
     }
     //cout << "end recv thread" << endl;
     return 0;

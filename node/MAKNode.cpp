@@ -53,7 +53,9 @@ int MAKNode::run(){
 		}else if(CS_timer>0){
             CS_timer-=1;
 		}
-		//cout << CS_timer << endl;
+        if(timer%10000==0){
+            cerr << timer << endl;
+        }
 		set<unsigned long>::iterator iter = time_schedule.find(this->timer);
 		if (iter != time_schedule.end())
 		{

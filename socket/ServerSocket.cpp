@@ -8,15 +8,18 @@
 #include <unistd.h>
 #include <netdb.h>
 #include <stdio.h>
+#include <string.h>
 #include <arpa/inet.h>
+#include "../node/NodeNetwork.h"
 using namespace std;
 
-ServerSocket::ServerSocket(): m_acceptThread(this)
+ServerSocket::ServerSocket(NodeNetwork* node_network): m_acceptThread(this)
 {
     //ctor
     m_thread_running  =false;
     m_event_listener = 0;
     m_socket = -1;
+    m_node_network = node_network;
 }
 
 int ServerSocket::init(int port){
@@ -138,14 +141,30 @@ int ServerSocket::AcceptThread::run(){
             cout << "ServerSocket: accept socket " << accept_socket << " from " << inet_ntoa(client_addr_in->sin_addr) << endl;
             //temp, need improved
             //m_parent->m_accepted_socket = new Socket(accept_socket);
+            char buff[1024];
+            bzero(buff,1024);
+            read(accept_socket,buff,1024);
+            //unsigned int from=0,to=0;
+            cerr << "FORCE READ " << buff << endl;
+            if(strcmp(buff,"START") != 0){
+                unsigned int from=0,to=0;
+                unsigned long timestamp=0;
+                memcpy(&to,buff,1);
+                memcpy(&from,buff+1,1);
+                memcpy(&timestamp,buff+2,sizeof(long));
+                cerr << "FORCE PARSE" << from << " " << to <<   " " << timestamp << endl;
+            }
+            m_parent->m_node_network->onReceive(buff,0);
+
+
 
             //upper listener is responsible for memory management of this Socket
-            if(m_parent->m_event_listener != 0){
-                m_parent->m_event_listener->onAccept(new Socket(accept_socket,inet_ntoa(client_addr_in->sin_addr)));
-            }
+            //if(m_parent->m_event_listener != 0){
+            //    m_parent->m_event_listener->onAccept(new Socket(accept_socket,inet_ntoa(client_addr_in->sin_addr)));
+            //}
 
         }
-        usleep(100);
+        //usleep(100);
     }
     return 0;
 }

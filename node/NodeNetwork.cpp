@@ -8,7 +8,7 @@ using namespace std;
 
 
 
-NodeNetwork::NodeNetwork(Node* node, int node_id): m_node(node)
+NodeNetwork::NodeNetwork(Node* node, int node_id): m_node(node), m_server_socket(this)
 {
     //ctor
     //m_sockets=0;
