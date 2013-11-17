@@ -19,7 +19,7 @@ int main(int argc, char*argv [])
 
 
 
-    if(algorithm==0){
+    if(algorithm==1){
         cout << "LAK" << endl;
         LAKNode node(nodeid);
         node.init();
