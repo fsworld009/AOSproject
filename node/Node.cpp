@@ -11,9 +11,9 @@ Node::Node(int node_id): node_id(node_id), m_node_network(this, this->node_id)
     //ctor
     m_start_signaled=false;
     m_disconnect_signaled=false;
-    CS_time=0.0;
-    timer=0.0;
-    CS_timer=0.0;
+    CS_time=0;
+    timer=0;
+    CS_timer=0;
 }
 
 //called by NodeNetwork when it received "START" signal

@@ -191,6 +191,7 @@ int NodeNetwork::close(){
 
     for(int i=0;i<m_accept_socket.size();i++){
         if(m_accept_socket[i]!=0){
+            //m_accept_socket[i]->disconnect();
             delete m_accept_socket[i];
             m_accept_socket[i]=0;
         }
@@ -265,8 +266,8 @@ int NodeNetwork::onDisconnect(ServerSocket* serverSocket){
 
 int NodeNetwork::onConnect(Socket* socket){
     char buff[10];
-    sprintf(buff,"NODE %d",m_node_id);
-    //sprintf(buff,"%d",m_node_id);
+    //sprintf(buff,"NODE %d",m_node_id);
+    sprintf(buff,"%d",m_node_id);
     socket->send(buff);
     return 0;
 }

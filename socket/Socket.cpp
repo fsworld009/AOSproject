@@ -212,6 +212,7 @@ int Socket::ReceiveThread::run(){
         bzero(m_parent->m_buffer,SOCKET_MAX_BUFFER_SIZE);
         result = read(m_parent->m_socket,m_parent->m_buffer,SOCKET_MAX_BUFFER_SIZE);
         if(result ==-1 || result == 0){
+            cout << "READ " << result << endl;
             cout << "Socket: receive thread close" << endl;
             m_parent->disconnect();
             return 0;

@@ -59,8 +59,8 @@ int LAKNode::init(){
 }
 
 int LAKNode::run(){
-	this->timer = 0.0;
-	this->CS_timer=0.0;
+	this->timer = 0;
+	this->CS_timer=0;
     string recv_message;
 
 	while (this->timer < 180000)
@@ -71,11 +71,11 @@ int LAKNode::run(){
         }
 
 
-		this->timer+=1.0;
+		this->timer+=1;
 		if(CS_timer==0 && is_inCS){
             finishCS();
 		}else if(CS_timer>0){
-            CS_timer-=1.0;
+            CS_timer-=1;
 		}
 		//cout << CS_timer << endl;
 		set<unsigned long>::iterator iter = time_schedule.find(this->timer);

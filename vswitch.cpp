@@ -31,6 +31,7 @@ int forward (char* msg, char* to_addr)
 	}
 	
 	sockfd = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+    
 	if (sockfd == -1)
 	{
 		return 1;
@@ -40,16 +41,17 @@ int forward (char* msg, char* to_addr)
 	(*server_addr).sin_port = htons(num);
 	if (connect(sockfd, result->ai_addr, result->ai_addrlen) == -1)
 	{
-		return 2;
+        return 2;
 	}
 	
-	if (write(sockfd, msg, strlen(msg)) != strlen(msg))
+
+	//if (write(sockfd, msg, strlen(msg)) != strlen(msg))
+    if (write(sockfd, msg, 1024) != 1024)
 	{
-		return 3;
+		
+        return 3;
 	}
-	
-	
-	close(sockfd);
+    close(sockfd);
 	return 0;
 }
 
@@ -62,8 +64,12 @@ void handle( unsigned int client_sock, int net_status)
 	ofstream log_file;
 	
 	memset(buffer, 0x00, sizeof(buffer));
+   // cerr <<"recv" << endl;
 	recv(client_sock, buffer, 1024, 0);
+    //cerr <<"recv end" << endl;
 	node_num = strtol(buffer, NULL, 10);
+    
+    cerr << "Node num " << node_num << endl;
 	
 	if (node_num > 45 || node_num == 0)
 	{
@@ -99,13 +105,16 @@ void handle( unsigned int client_sock, int net_status)
 			break;
 		}
 		
-		unsigned int t = (int) buffer[0];
-        //unsigned int t = 0;
-        //memcpy(&t,buffer,1);
+		//unsigned int t = (int) buffer[0];
+        unsigned int t = 0;
+        memcpy(&t,buffer,1);
         //log_file.open(log_name, ios::out | ios::binary | ios::app);    //temp code by Andy
-        log_file << t << endl;
+        cerr << "RECV TO " << t << endl;
+        //cout.flush();
 		log_file << buffer << endl;
 		log_file << msg_length << endl;
+        
+        
 		
 		if (t == 255) //Control message
 		{
@@ -139,8 +148,8 @@ void handle( unsigned int client_sock, int net_status)
 		{
 			sprintf(to_addr, "net%d.utdallas.edu", buffer[0]);
 		}
-	
-		log_file << "Forwarding to: " << to_addr << endl; //DELTE THIS
+        cerr << "Forwarding to: " << to_addr << endl; //DELTE THIS
+		//log_file << "Forwarding to: " << to_addr << endl; //DELTE THIS
         //log_file.close();       //temp code by Andy
 		int temp = forward(buffer, to_addr);
 		send(client_sock, &temp, 4, 0);
@@ -212,11 +221,13 @@ int main(int argc, char *argv[])
 	while(1)
 	{
 		client_sock = accept(server_sock, (struct sockaddr *)&client_addr, (socklen_t*) &addr_len);
+        cerr << "fork" << endl;
 		pid = fork();
 
 		if (pid > 0)
 		{
-			handle(client_sock, net_status);
+			cerr << "handle" << endl;
+            handle(client_sock, net_status);
 			return 0;
 		}
 
