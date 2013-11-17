@@ -35,6 +35,10 @@ int MAKNode::run()
     req.tv_sec = 0;
     req.tv_nsec = milisec * 1000000L;
 
+    if(time_schedule.size()==0){
+        this->send_end_signal();
+    }
+
 	while (!done_all_request() || !recv_end_signal())
 	{
 	        //handle receive messages

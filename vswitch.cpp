@@ -43,7 +43,7 @@ int forward (char* msg, char* to_addr)
 		return 2;
 	}
 	
-	if (write(sockfd, msg, 1024) != 1024)
+	if (write(sockfd, msg, strlen(msg) + 1) != strlen(msg))
 	{
 		return 3;
 	}

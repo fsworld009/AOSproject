@@ -37,6 +37,24 @@ config read_config()
 	config c;
 	memset(&c, 0x00, sizeof(c));
 	
+	int trans[37];
+	memset(trans, 0x00, sizeof(trans));
+	int count = 0;
+	int next = 0;
+	while(count < 45)
+	{
+		count ++;
+		
+		if( count %5 == 0)
+		{
+			continue;
+		}
+		
+		next ++;
+		trans[next] = count;
+		
+	}
+	
 	getline(config_file, buffer); 
 	while( ! config_file.eof())
 	{
@@ -66,7 +84,7 @@ config read_config()
 				getline(iss, result, ',');
 				//cout << "Result: " << result << endl;
 				
-				int node = strtol(result.c_str(), NULL, 10);
+				int node = trans[strtol(result.c_str(), NULL, 10)];
 				req* current = &(c.reqlist[node]);
 				while (current->next != NULL)
 				{

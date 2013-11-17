@@ -83,7 +83,11 @@ int Node::send(unsigned int from,unsigned int to,unsigned int timestamp, string 
 
 int Node::parse_quorum(){
     char filepath[30];
-    sprintf(filepath,"./config/quorum%d.txt",node_id);
+    if(node_id<=9){
+        sprintf(filepath,"quorum0%d",node_id);
+    }else{
+        sprintf(filepath,"quorum%d",node_id);
+    }
 	ifstream ifs(filepath, ios::in);
 	string str;
 	while (getline(ifs, str))
@@ -97,7 +101,11 @@ int Node::parse_quorum(){
 
 int Node::parse_schedule(){
     char filepath[30];
-    sprintf(filepath,"./config/config%d.txt",node_id);
+    if(node_id<=9){
+        sprintf(filepath,"config0%d",node_id);
+    }else{
+        sprintf(filepath,"config%d",node_id);
+    }
 	ifstream ifs(filepath, ios::in);
 	string str;
     getline(ifs, str);
