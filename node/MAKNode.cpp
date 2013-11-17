@@ -32,6 +32,12 @@ int MAKNode::run(){
 	this->timer = 0;
 	this->CS_timer=0;
     string recv_message;
+    
+    int milisec = 1;
+    timespec req = {0};
+    req.tv_sec = 0;
+    //req.tv_nsec = milisec * 1000000L;
+    req.tv_nsec = milisec * 10000L;
 
 	while (this->timer < 180000)
 	{
@@ -53,7 +59,7 @@ int MAKNode::run(){
 		{
 			this->send_request();
 		}
-		usleep(100);
+		nanosleep(&req, (timespec *)NULL);
 	}
     cout << "END" << endl;
     return 0;

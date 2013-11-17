@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdlib.h>
+#include <time.h>
 using namespace std;
 
 LAKNode::LAKNode(int node_id): Node(node_id)
@@ -62,6 +63,13 @@ int LAKNode::run(){
 	this->timer = 0;
 	this->CS_timer=0;
     string recv_message;
+    
+    int milisec = 1;
+    timespec req = {0};
+    req.tv_sec = 0;
+    //req.tv_nsec = milisec * 1000000L;
+    req.tv_nsec = milisec * 10000L;
+    
 
 	while (this->timer < 180000)
 	{
@@ -77,14 +85,14 @@ int LAKNode::run(){
 		}else if(CS_timer>0){
             CS_timer-=1;
 		}
-		//cout << CS_timer << endl;
+		//cout << timer << endl;
 		set<unsigned long>::iterator iter = time_schedule.find(this->timer);
 		if (iter != time_schedule.end())
 		{
             send_request_cs_msg();
 			this->send_request();
 		}
-		usleep(100);
+		nanosleep(&req, (timespec *)NULL);
 	}
     cout << "END" << endl;
     return 0;
