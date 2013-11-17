@@ -45,7 +45,8 @@ int forward (char* msg, char* to_addr)
 	}
 	
 
-	if (write(sockfd, msg, strlen(msg)) != strlen(msg))
+	//if (write(sockfd, msg, strlen(msg)) != strlen(msg))
+    if (write(sockfd, msg, strlen(msg)+1) != strlen(msg)+1)
 	{
 		
         return 3;
@@ -72,10 +73,10 @@ void handle( unsigned int client_sock, int net_status)
 	
 	if (node_num > 45 || node_num == 0)
 	{
-		//send(client_sock, "1", 1, 0); //Invalid Node Number
+		send(client_sock, "1", 2, 0); //Invalid Node Number
 		return;
 	}
-	//send(client_sock, "0", 1, 0); //respond that node number is valid
+	send(client_sock, "0", 2, 0); //respond that node number is valid
 	
 	if( node_num < 10)
 	{
@@ -118,14 +119,14 @@ void handle( unsigned int client_sock, int net_status)
 		
 		if (t == 255) //Control message
 		{
-			//send(client_sock, "0", 1, 0);
+			send(client_sock, "0", 2, 0);
 			continue; //all messages are logged. These are only logged
 		}
 		
 		else if( net_status == 3 && (rand() % 10) == 0  && t != 44)
 		{
 			//log_file << "dropped" << endl;
-			//send(client_sock, "0", 1, 0);
+			send(client_sock, "0", 2, 0);
 			continue;
 		}
 		
@@ -137,7 +138,7 @@ void handle( unsigned int client_sock, int net_status)
 		
 		if (t > 45 || t == 0) //If "To" is invalid, exit
 		{
-			//send(client_sock, "0", 1, 0); // 0 means no problem, there's never a problem exiting
+			send(client_sock, "0", 2, 0); // 0 means no problem, there's never a problem exiting
 			break;
 		}
 		else if (t < 10) //format "To" Hostname
@@ -152,7 +153,7 @@ void handle( unsigned int client_sock, int net_status)
 		//log_file << "Forwarding to: " << to_addr << endl; //DELTE THIS
         //log_file.close();       //temp code by Andy
 		int temp = forward(buffer, to_addr);
-		//send(client_sock, &temp, 4, 0);
+		send(client_sock, &temp, 5, 0);
 	}
 
 	close(client_sock);

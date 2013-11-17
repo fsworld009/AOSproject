@@ -197,7 +197,7 @@ int Socket::SendThread::run(){
             }
             m_parent->m_queue_lock.unlock();
         //usleep(100);
-        
+
     }
     //cout << "end send thread" << endl;
     return 0;
@@ -230,7 +230,7 @@ int Socket::ReceiveThread::run(){
             delete[] temp;
         }
         //usleep(100);
-        
+
     }
     //cout << "end recv thread" << endl;
     return 0;

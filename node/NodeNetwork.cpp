@@ -403,7 +403,7 @@ int NodeNetwork::AcceptThread::run(){
                 memcpy(&buff,message+2+sizeof(long),SOCKET_MAX_BUFFER_SIZE-2-sizeof(long));
 
                 cout << "NodeNetwork:: recv from=" << from << " to=" << to << " timestamp=" << timestamp <<  " msg: " << buff << endl;
-                //m_logfile << "NodeNetwork:: recv from=" << from << " to=" << to << " timestamp=" << timestamp <<  " msg: " << buff << endl;
+                m_parent->m_logfile << "NodeNetwork:: recv from=" << from << " to=" << to << " timestamp=" << timestamp <<  " msg: " << buff << endl;
                 //m_node->receive(from,to,timestamp,buff);
                 if(to==m_parent->m_node_id){
                     string msg_string(buff);
