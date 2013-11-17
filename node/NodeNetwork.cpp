@@ -53,8 +53,8 @@ int NodeNetwork::init(){
 
     m_port = NODE_SOCKET_PORT;
     cout << "Node id is " << m_node_id << endl;
-    m_switch_netid = 0;
-    //m_switch_netid = 5*((m_node_id/5)+1);
+    //m_switch_netid = 0;
+    m_switch_netid = 5*((m_node_id/5)+1);
     cout << "Switch net id is " << m_switch_netid << endl;
     char buff[30];
     getHostName(m_switch_netid,buff);
@@ -75,7 +75,7 @@ int NodeNetwork::init(){
     m_socket->registerEventListener(this);
 
 
-    //m_server_socket.init(NODE_SOCKET_PORT);
+    m_server_socket.init(NODE_SOCKET_PORT);
     m_server_socket.registerEventListener(this);
     return 0;
 }
@@ -167,7 +167,7 @@ int NodeNetwork::start(){
         //m_socket = new Socket();
         //config this socket to connect to switch
     }*/
-    //m_server_socket.start();
+    m_server_socket.start();
     char host[24];
     this->getHostName(m_switch_netid,host);
     m_socket->connectHost(host,m_port);
