@@ -1,11 +1,13 @@
 #ifndef NODENETWORK_H
 #define NODENETWORK_H
 #include <fstream>
+#include <vector>
 #include "../socket/ServerSocket.h"
 #include "../socket/Socket.h"
 #include "../socket/ServerSocketEventListener.h"
 #include "../socket/SocketEventListener.h"
 #define NODE_SOCKET_PORT 6789
+using namespace std;
 
 /*
 Yu-Chun Lee, yxl122130 11.8.2013
@@ -16,7 +18,7 @@ set m_mode=0 for algorithm tests and 1 for cooperation to switches
 
 class Node;
 
-class NodeNetwork: public SocketEventListener
+class NodeNetwork: public SocketEventListener, ServerSocketEventListener
 {
     public:
         NodeNetwork(Node* node,int node_id);
@@ -34,6 +36,10 @@ class NodeNetwork: public SocketEventListener
         int onReceive(char* message,Socket* socket);
         int onDisconnect(Socket* socket);
 
+        //ServerSocketEventListener
+        int onAccept(Socket* socket);
+        int onDisconnect(ServerSocket* socket);
+
         int close();
         int send_end_signal();
     protected:
@@ -41,7 +47,8 @@ class NodeNetwork: public SocketEventListener
         int getHostName(int netId,char* host);
         //Socket** m_sockets; //used when working without switch
         Socket* m_socket; //used when working with switch
-        //ServerSocket m_server_socket;
+        ServerSocket m_server_socket;
+        vector<Socket*> m_accept_socket;
         //int m_node_number;
         int m_num_of_nodes;
         //int* m_node_netid;

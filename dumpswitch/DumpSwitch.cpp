@@ -68,7 +68,7 @@ int DumpSwitch::onConnect(Socket* socket){
 
 }
 int DumpSwitch::onReceive(char* message,Socket* socket){
-    if(strlen(message) >=5){
+    //if(strlen(message) >=5){
         if(strncmp("NODE ",message,5)==0){
             int nodeid;
             sscanf(message+5,"%d",&nodeid);
@@ -102,7 +102,7 @@ int DumpSwitch::onReceive(char* message,Socket* socket){
             }
             return 0;
         }
-    }
+    //}
 
     //regular msg
 

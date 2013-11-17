@@ -42,24 +42,25 @@ int Node::init(){
 
 
     //print set
-    /*cout << "CS TIME=" << CS_time << endl;
     set<int>::iterator iter;
     for (iter = quorum_set.begin(); iter != quorum_set.end(); iter++)
     {
         cout << *iter << " ";
     }
     cout << endl;
-    for (iter = time_schedule.begin(); iter != time_schedule.end(); iter++)
+    set<unsigned long>::iterator iter2;
+    for (iter2 = time_schedule.begin(); iter2 != time_schedule.end(); iter2++)
     {
-        cout << *iter << " ";
+        cout << *iter2 << " ";
     }
-    cout << endl;*/
+    cout << endl;
 
     m_node_network.init();
     return 0;
 }
 
 int Node::start(){
+    sleep(5);
     m_node_network.start();
     cout << "Waiting for signal..." << endl;
     while(!m_start_signaled){
@@ -81,7 +82,12 @@ int Node::send(unsigned int from,unsigned int to,unsigned int timestamp, string 
 
 int Node::parse_quorum(){
     char filepath[30];
-    sprintf(filepath,"quorum%d.txt",node_id);
+    if(node_id<=9){
+        sprintf(filepath,"quorum0%d",node_id);
+    }else{
+        sprintf(filepath,"quorum%d",node_id);
+    }
+
 	ifstream ifs(filepath, ios::in);
 	string str;
 	while (getline(ifs, str))
@@ -95,7 +101,12 @@ int Node::parse_quorum(){
 
 int Node::parse_schedule(){
     char filepath[30];
-    sprintf(filepath,"config%d.txt",node_id);
+    if(node_id<=9){
+        sprintf(filepath,"config0%d",node_id);
+    }else{
+        sprintf(filepath,"config%d",node_id);
+    }
+
 	ifstream ifs(filepath, ios::in);
 	string str;
     getline(ifs, str);

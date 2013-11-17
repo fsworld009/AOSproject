@@ -50,10 +50,11 @@ int NodeNetwork::init(){
             break;
         }
     }*/
-    
+
     m_port = NODE_SOCKET_PORT;
     cout << "Node id is " << m_node_id << endl;
-    m_switch_netid = 5*((m_node_id/5)+1);
+    m_switch_netid = 0;
+    //m_switch_netid = 5*((m_node_id/5)+1);
     cout << "Switch net id is " << m_switch_netid << endl;
     char buff[30];
     getHostName(m_switch_netid,buff);
@@ -72,8 +73,11 @@ int NodeNetwork::init(){
 
     m_socket = new Socket();
     m_socket->registerEventListener(this);
-    return 0;
 
+
+    //m_server_socket.init(NODE_SOCKET_PORT);
+    m_server_socket.registerEventListener(this);
+    return 0;
 }
 
 
@@ -85,6 +89,11 @@ int NodeNetwork::send(unsigned int from, unsigned int to, unsigned long timestam
     memcpy(buff+1,&from,1);
     memcpy(buff+2,&timestamp,sizeof(long));
     memcpy(buff+2+sizeof(long),message,SOCKET_MAX_BUFFER_SIZE-2-sizeof(long));
+
+    /*buff[0] = (char)to;
+    buff[1] = (char)from;
+    memcpy(buff+2,&timestamp,sizeof(long));
+    memcpy(buff+2+sizeof(long),message,SOCKET_MAX_BUFFER_SIZE-2-sizeof(long));*/
 
     //unsigned int x1=0,x2=0,x3=0;
     //memcpy(&x1,buff,1);
@@ -158,6 +167,7 @@ int NodeNetwork::start(){
         //m_socket = new Socket();
         //config this socket to connect to switch
     }*/
+    //m_server_socket.start();
     char host[24];
     this->getHostName(m_switch_netid,host);
     m_socket->connectHost(host,m_port);
@@ -175,9 +185,19 @@ int NodeNetwork::close(){
                 m_sockets[i]=0;
             }
         }
-        delete[] m_sockets;
+        delete m_sockets;
         m_sockets=0;
     }*/
+
+    for(int i=0;i<m_accept_socket.size();i++){
+        if(m_accept_socket[i]!=0){
+            delete m_accept_socket[i];
+            m_accept_socket[i]=0;
+        }
+    }
+    m_accept_socket.clear();
+    m_server_socket.disconnect();
+
 
     if(m_socket != 0){
         m_socket->disconnect();
@@ -198,11 +218,14 @@ NodeNetwork::~NodeNetwork()
     //dtor
     close();
 }
-/*
+
 int NodeNetwork::onAccept(Socket* socket){
+    cout << "accept connect" << endl;
     socket->registerEventListener(this);
+    m_accept_socket.push_back(socket);
+
     //m_socket = socket;
-    if(m_mode==0){
+    /*if(m_mode==0){
         char ip[20];
         socket->getBoundedIp(ip);
 
@@ -233,15 +256,17 @@ int NodeNetwork::onAccept(Socket* socket){
     }
 
 
+    return 0;*/
     return 0;
 }
 int NodeNetwork::onDisconnect(ServerSocket* serverSocket){
     return 0;
-}*/
+}
 
 int NodeNetwork::onConnect(Socket* socket){
     char buff[10];
-    sprintf(buff,"%d",m_node_id);
+    sprintf(buff,"NODE %d",m_node_id);
+    //sprintf(buff,"%d",m_node_id);
     socket->send(buff);
     return 0;
 }
@@ -249,7 +274,7 @@ int NodeNetwork::onConnect(Socket* socket){
 int NodeNetwork::send_end_signal(){
     char buff[10];
     sprintf(buff,"END %d",m_node_id);
-    m_socket->send(buff);
+    send(m_node_id,44,0,buff);
     return 0;
 }
 
@@ -275,6 +300,8 @@ int NodeNetwork::onReceive(char* message,Socket* socket){
         unsigned int from=0,to=0,timestamp=0;
         memcpy(&to,message,1);
         memcpy(&from,message+1,1);
+        //to = (int) message[0];
+        //from = (int) message[1];
         memcpy(&timestamp,message+2,sizeof(long));
 
         char buff[SOCKET_MAX_BUFFER_SIZE];

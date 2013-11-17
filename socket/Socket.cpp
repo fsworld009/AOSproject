@@ -66,7 +66,7 @@ int Socket::connectHost(char* host,int port){
         cout << "Socket: socket connect error" << endl;
         return 0;
     }else{
-        cout <<"Socket: connected to " << host << endl;
+        cout <<"Socket: connected to " << host << ":" << port << endl;
         strcpy(m_host,host);
         if(m_event_listener != 0){
             m_event_listener->onConnect(this);

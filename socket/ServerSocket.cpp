@@ -33,6 +33,7 @@ int ServerSocket::init(int port){
     m_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     m_addr.sin_port = htons(port);
 
+
     cout << "Addr: " << inet_ntoa(m_addr.sin_addr) << " Port: " << ntohs(m_addr.sin_port) << endl;
     return 0;
 }
@@ -44,7 +45,7 @@ int ServerSocket::start(){
 
     if (bind_result < 0){
         cout << "ServerSocket: Socket bind error " << bind_result << endl;
-        exit(-1);
+        //exit(-1);
     }
 
     m_thread_running = true;

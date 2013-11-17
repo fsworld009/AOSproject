@@ -14,17 +14,19 @@ int main(int argc, char*argv [])
         cout << "[algorithm]: 0=Maekawa 1=LAK" << endl;
         return 0;
     }
-    int nodeid = atoi(argv[1]);
+    unsigned int nodeid = atoi(argv[1]);
     int algorithm = atoi(argv[2]);
 
 
 
-    if(algorithm==1){
+    if(algorithm==0){
+        cout << "LAK" << endl;
         LAKNode node(nodeid);
         node.init();
         node.start();
         //node.close();
     }else{
+        cout << "MAK" << endl;
         MAKNode node(nodeid);
         node.init();
         node.start();

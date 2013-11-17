@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <string.h>
-#include <sys/socket.h>
+#include <linux/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <unistd.h>
 #include <netdb.h>
 #define LSERVER_BUFFER_SIZE 1024
@@ -100,32 +100,34 @@ int main(int argc, char *argv[])
             int result;
             while(1){
                 bzero(buff,LSERVER_BUFFER_SIZE);
-                result = read(client_sock, buff, LSERVER_BUFFER_SIZE);
-                //recv(client_sock, buffer, 1024, 0);
-                if(result ==-1 || result == 0){
-                    printf("socket error\n");
-                    close(client_sock);
-                    close(server_sock);
-                    return 0;
-                }else{
-                    printf("RECV %s\n",buff);
+                //result = read(client_sock, buff, LSERVER_BUFFER_SIZE);
+                recv(client_sock, buff, LSERVER_BUFFER_SIZE, 0);
+                //if(result ==-1 || result == 0){
+                //    printf("socket error\n");
+                //    close(client_sock);
+                //    close(server_sock);
+                //    return 0;
+                //}else{
+                    //printf("RECV %s\n",buff);
                     
                     
                     if(strcmp(buff,"0")==0 || strcmp(buff,"1")==0){
                         int algorithm = atoi(buff);
                         if(role==NODE){
                             char buff[30];
-                            printf(buff,"./node.out %d %d",netid, algorithm);
+                            sprintf(buff,"./node.out %d %d",netid, algorithm);
+                            printf("%s\n",buff);
                             system(buff);
                         }else{
                             system("./switch");
                         }
                     }else if(strcmp(buff,"END")==0){
+                        //send an invalid msg to switch
                         close(client_sock);
                         close(server_sock);
                         return 0;
                     }
-                }
+                //}
             }
 			return 0;
 		}else{

@@ -88,8 +88,18 @@ void handle( unsigned int client_sock, int net_status)
 	{
 		memset(buffer, 0x00, 1024);
 		int msg_length = recv(client_sock, buffer, 1024, 0);
+		if( msg_length == 0 )
+		{
+			cout << "Peer Shutdown" << endl;
+			break;
+		}
+		if( msg_length == -1)
+		{
+			cout << "Error receiving message" <<endl;
+			break;
+		}
 		
-		unsigned int t = buffer[0] & 0xff;
+		unsigned int t = (int) buffer[0];
 		log_file << buffer << endl;
 		log_file << msg_length << endl;
 		
@@ -99,7 +109,7 @@ void handle( unsigned int client_sock, int net_status)
 			continue; //all messages are logged. These are only logged
 		}
 		
-		else if( net_status == 3 && (rand() % 10) == 0 )
+		else if( net_status == 3 && (rand() % 10) == 0  && t != 44)
 		{
 			//log_file << "dropped" << endl;
 			send(client_sock, "0", 1, 0);
@@ -126,6 +136,7 @@ void handle( unsigned int client_sock, int net_status)
 			sprintf(to_addr, "net%d.utdallas.edu", buffer[0]);
 		}
 	
+		log_file << "Forwarding to: " << to_addr << endl; //DELTE THIS
 		int temp = forward(buffer, to_addr);
 		send(client_sock, &temp, 4, 0);
 	}
@@ -151,6 +162,8 @@ int main(int argc, char *argv[])
 	char_stat[2] = 0x00;
 	int node_num = strtol( char_stat, NULL, 10);
 	
+	cout << "node_num = " << node_num << endl;
+	
 	char cfile[32];
 	if(node_num < 10)
 	{
@@ -167,6 +180,8 @@ int main(int argc, char *argv[])
 		//1 for reliable uncongested
 		//2 for reliable congested
 		//3 for unreliable
+		
+	cout << "net_status = " << net_status << endl;
 	port = 6789;
 
 	pthread_attr_t attr;

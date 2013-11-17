@@ -669,15 +669,12 @@ void term_wait(int num_nodes, unsigned int server_sock)
 	{
 		client_sock = accept(server_sock, (struct sockaddr *)&client_addr, (socklen_t*) &addr_len);
 		char buffer[1024];
-		memset(buffer, 0x00, sizeof(buffer));
 		recv(client_sock, buffer, 1024, 0);
-		send(client_sock, "0", 1, 0);
+		//send(client_sock, "\xff", 1, 0);
 		
-		if ( buffer[0] == 'E')
-		{
-			count ++;
-			//cout << count << " / " << num_nodes << endl;
-		}
+		cout<< "Got somethin' here..." << endl;
+		count ++;
+		cout << count << " / " << num_nodes << endl;
 		
 		close(client_sock);
 		
@@ -689,7 +686,7 @@ unsigned int term_listen()
 {
 	struct sockaddr_in server_addr;
 	unsigned int server_sock;
-	int port = 7890;
+	int port = 6789;
 	
 	server_sock = socket(AF_INET, SOCK_STREAM, 0);
 	 
@@ -726,6 +723,7 @@ int main(int argc, char *argv[])
 	memset(msg, 0x00, sizeof(msg));
 	sprintf(msg, "0");
 	contact_servers(c.num_nodes, msg, 4567);
+	sleep(20);
 	
 	//run algorithm 1
 	memset(msg, 0x00, sizeof(msg));
@@ -745,6 +743,7 @@ int main(int argc, char *argv[])
 	memset(msg, 0x00, sizeof(msg));
 	sprintf(msg, "1");
 	contact_servers(c.num_nodes, msg, 4567);
+	sleep(20);
 	
 	//run algorithm 2
 	memset(msg, 0x00, sizeof(msg));
@@ -755,11 +754,13 @@ int main(int argc, char *argv[])
 	memset(msg, 0x00, sizeof(msg));
 	sprintf(msg, "END");
 	contact_servers(c.num_nodes, msg, 6789);
+	sleep(20);
 	
 	//tell listening servers to exit
 	memset(msg, 0x00, sizeof(msg));
 	sprintf(msg, "EXIT");
 	contact_servers(c.num_nodes, msg, 4567);
+	sleep(20);
 	
 	//collect results
 	data* res2 = get_results(c.num_nodes);

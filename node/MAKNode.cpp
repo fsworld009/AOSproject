@@ -33,7 +33,7 @@ int MAKNode::run(){
 	this->CS_timer=0.0;
     string recv_message;
 
-	while (this->timer < 300)
+	while (this->timer < 180000)
 	{
         //handle receive messages
         while(get_message(&recv_message)){
@@ -53,7 +53,7 @@ int MAKNode::run(){
 		{
 			this->send_request();
 		}
-		usleep(1000);
+		usleep(100);
 	}
     cout << "END" << endl;
     return 0;
