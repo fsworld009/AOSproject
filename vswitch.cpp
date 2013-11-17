@@ -45,8 +45,7 @@ int forward (char* msg, char* to_addr)
 	}
 	
 
-	//if (write(sockfd, msg, strlen(msg)) != strlen(msg))
-    if (write(sockfd, msg, 1024) != 1024)
+	if (write(sockfd, msg, strlen(msg)) != strlen(msg))
 	{
 		
         return 3;
