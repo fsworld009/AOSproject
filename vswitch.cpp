@@ -100,6 +100,10 @@ void handle( unsigned int client_sock, int net_status)
 		}
 		
 		unsigned int t = (int) buffer[0];
+        //unsigned int t = 0;
+        //memcpy(&t,buffer,1);
+        //log_file.open(log_name, ios::out | ios::binary | ios::app);    //temp code by Andy
+        log_file << t << endl;
 		log_file << buffer << endl;
 		log_file << msg_length << endl;
 		
@@ -137,6 +141,7 @@ void handle( unsigned int client_sock, int net_status)
 		}
 	
 		log_file << "Forwarding to: " << to_addr << endl; //DELTE THIS
+        //log_file.close();       //temp code by Andy
 		int temp = forward(buffer, to_addr);
 		send(client_sock, &temp, 4, 0);
 	}
