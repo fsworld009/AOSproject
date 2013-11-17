@@ -1,14 +1,17 @@
 #include "NodeNetwork.h"
 #include "Node.h"
+#include <unistd.h>
+#include <netdb.h>
 #include <string.h>
 #include <iostream>
 #include <string>
+#include <arpa/inet.h>
 #include <stdio.h>
 using namespace std;
 
 
 
-NodeNetwork::NodeNetwork(Node* node, int node_id): m_node(node), m_server_socket(this)
+NodeNetwork::NodeNetwork(Node* node, int node_id): m_node(node), m_accept_thread(this)//, m_server_socket(this)
 {
     //ctor
     //m_sockets=0;
@@ -21,6 +24,7 @@ NodeNetwork::NodeNetwork(Node* node, int node_id): m_node(node), m_server_socket
     m_socket=0;
 
     m_node_id = node_id;
+    m_thread_running=false;
 }
 
 int NodeNetwork::getHostName(int netid, char* host){
@@ -75,8 +79,8 @@ int NodeNetwork::init(){
     m_socket->registerEventListener(this);
 
 
-    m_server_socket.init(NODE_SOCKET_PORT);
-    m_server_socket.registerEventListener(this);
+    //m_server_socket.init(NODE_SOCKET_PORT);
+    //m_server_socket.registerEventListener(this);
     return 0;
 }
 
@@ -167,14 +171,16 @@ int NodeNetwork::start(){
         //m_socket = new Socket();
         //config this socket to connect to switch
     }*/
-    m_server_socket.start();
+    //m_server_socket.start();
     char host[24];
     this->getHostName(m_switch_netid,host);
     m_socket->connectHost(host,m_port);
+    m_thread_running = true;
+    m_accept_thread.start();
     return 0;
 }
 
-int NodeNetwork::close(){
+int NodeNetwork::close_me(){
 
 
     /*if(m_sockets !=0){
@@ -189,7 +195,7 @@ int NodeNetwork::close(){
         m_sockets=0;
     }*/
 
-    for(int i=0;i<m_accept_socket.size();i++){
+    /*for(int i=0;i<m_accept_socket.size();i++){
         if(m_accept_socket[i]!=0){
             //m_accept_socket[i]->disconnect();
             delete m_accept_socket[i];
@@ -197,7 +203,7 @@ int NodeNetwork::close(){
         }
     }
     m_accept_socket.clear();
-    m_server_socket.disconnect();
+    m_server_socket.disconnect();*/
 
 
     if(m_socket != 0){
@@ -217,9 +223,9 @@ int NodeNetwork::close(){
 NodeNetwork::~NodeNetwork()
 {
     //dtor
-    close();
+    close_me();
 }
-
+/*
 int NodeNetwork::onAccept(Socket* socket){
     cout << "accept connect" << endl;
     socket->registerEventListener(this);
@@ -258,11 +264,11 @@ int NodeNetwork::onAccept(Socket* socket){
 
 
     return 0;*/
-    return 0;
+    /*return 0;
 }
 int NodeNetwork::onDisconnect(ServerSocket* serverSocket){
     return 0;
-}
+}*/
 
 int NodeNetwork::onConnect(Socket* socket){
     char buff[10];
@@ -333,5 +339,94 @@ int NodeNetwork::onDisconnect(Socket* socket){
             }
         }
     }*/
+    return 0;
+}
+
+
+NodeNetwork::AcceptThread::AcceptThread(NodeNetwork* node_network){
+    m_parent = node_network;
+}
+
+int NodeNetwork::AcceptThread::disconnect(){
+    if(m_socket != -1){
+        //close sockets (hence unblock send/recv threads)
+        shutdown(m_socket,SHUT_RDWR);
+         close(m_socket);
+        m_socket = -1;
+    }
+}
+
+int NodeNetwork::AcceptThread::run(){
+    cout << "NodeNetwork: Listen thread start"  << endl;
+
+    //create server socket
+    m_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (m_socket < 0){
+        cout << "NodeNetwork: Socket opening error" << endl;
+        //exit(-1);
+    }
+    bzero((char *) &m_addr, sizeof(m_addr));
+    m_addr.sin_family = AF_INET;
+    hostent *server = 0;
+    server = gethostbyname("localhost");    //gethostname only works with IPv4
+    bcopy((char *)server->h_addr,(char *)&m_addr.sin_addr.s_addr,server->h_length);
+    m_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    m_addr.sin_port = htons(NODE_SOCKET_PORT);
+
+
+    cout << "Addr: " << inet_ntoa(m_addr.sin_addr) << " Port: " << ntohs(m_addr.sin_port) << endl;
+
+
+
+    //bind
+    int option=1;
+    setsockopt(m_socket,SOL_SOCKET,SO_REUSEADDR,(char*)&option,sizeof(option));
+    int bind_result = bind(m_socket, (struct sockaddr *) &m_addr,sizeof(m_addr));
+
+    if (bind_result < 0){
+        cout << "NodeNetwork: Socket bind error " << bind_result << endl;
+        //exit(-1);
+    }
+
+
+    sockaddr client_addr;
+    socklen_t client_len = sizeof(client_addr);
+    sockaddr_in* client_addr_in = (sockaddr_in*)&client_addr;
+    int accept_socket;
+    listen(m_socket,3);
+    while(m_parent->m_thread_running){
+        accept_socket = accept(m_socket, &client_addr, &client_len);
+        getpeername(accept_socket,&client_addr, &client_len);
+
+        if(accept_socket != -1){
+            cout << "ServerSocket: accept socket " << accept_socket << " from " << inet_ntoa(client_addr_in->sin_addr) << endl;
+            //temp, need improved
+            //m_parent->m_accepted_socket = new Socket(accept_socket);
+            char buff[1024];
+            bzero(buff,1024);
+            read(accept_socket,buff,1024);
+            //unsigned int from=0,to=0;
+            cerr << "FORCE READ " << buff << endl;
+            if(strcmp(buff,"START") != 0){
+                unsigned int from=0,to=0;
+                unsigned long timestamp=0;
+                memcpy(&to,buff,1);
+                memcpy(&from,buff+1,1);
+                memcpy(&timestamp,buff+2,sizeof(long));
+                cerr << "FORCE PARSE" << from << " " << to <<   " " << timestamp << endl;
+            }
+            m_parent->onReceive(buff,0);
+            close(accept_socket);
+
+
+
+            //upper listener is responsible for memory management of this Socket
+            //if(m_parent->m_event_listener != 0){
+            //    m_parent->m_event_listener->onAccept(new Socket(accept_socket,inet_ntoa(client_addr_in->sin_addr)));
+            //}
+
+        }
+        //usleep(100);
+    }
     return 0;
 }

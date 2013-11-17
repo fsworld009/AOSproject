@@ -2,9 +2,7 @@
 #define NODENETWORK_H
 #include <fstream>
 #include <vector>
-#include "../socket/ServerSocket.h"
 #include "../socket/Socket.h"
-#include "../socket/ServerSocketEventListener.h"
 #include "../socket/SocketEventListener.h"
 #define NODE_SOCKET_PORT 6789
 using namespace std;
@@ -18,7 +16,7 @@ set m_mode=0 for algorithm tests and 1 for cooperation to switches
 
 class Node;
 
-class NodeNetwork: public SocketEventListener, ServerSocketEventListener
+class NodeNetwork: public SocketEventListener
 {
     public:
         NodeNetwork(Node* node,int node_id);
@@ -37,18 +35,19 @@ class NodeNetwork: public SocketEventListener, ServerSocketEventListener
         int onDisconnect(Socket* socket);
 
         //ServerSocketEventListener
-        int onAccept(Socket* socket);
-        int onDisconnect(ServerSocket* socket);
+        /*int onAccept(Socket* socket);
+        int onDisconnect(ServerSocket* socket);*/
 
-        int close();
+        int close_me();
         int send_end_signal();
     protected:
     private:
         int getHostName(int netId,char* host);
         //Socket** m_sockets; //used when working without switch
         Socket* m_socket; //used when working with switch
-        ServerSocket m_server_socket;
-        vector<Socket*> m_accept_socket;
+
+        //ServerSocket m_server_socket;
+        //vector<Socket*> m_accept_socket;
         //int m_node_number;
         int m_num_of_nodes;
         //int* m_node_netid;
@@ -63,6 +62,21 @@ class NodeNetwork: public SocketEventListener, ServerSocketEventListener
 
         int m_port;
         std::ofstream m_logfile;
+
+        bool m_thread_running;
+
+        class AcceptThread: public Thread{
+            public:
+                AcceptThread(NodeNetwork* parent);
+                virtual int run();
+                int disconnect();
+            private:
+                NodeNetwork* m_parent;
+                int m_socket;
+                sockaddr_in m_addr;
+        };
+
+        AcceptThread m_accept_thread;
         //int m_mode;
 };
 

@@ -71,7 +71,7 @@ int Node::start(){
     while(!m_disconnect_signaled){
         usleep(100);
     }
-    m_node_network.close();
+    m_node_network.close_me();
     return 0;
 }
 
