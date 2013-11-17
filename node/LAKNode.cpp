@@ -63,13 +63,13 @@ int LAKNode::run(){
 	this->timer = 0;
 	this->CS_timer=0;
     string recv_message;
-    
+
     int milisec = 1;
     timespec req = {0};
     req.tv_sec = 0;
     //req.tv_nsec = milisec * 1000000L;
     req.tv_nsec = milisec * 10000L;
-    
+
 
 	while (this->timer < 180000)
 	{
@@ -86,6 +86,10 @@ int LAKNode::run(){
             CS_timer-=1;
 		}
 		//cout << timer << endl;
+		if(timer%10000==0){
+            cerr << timer << endl;
+		}
+
 		set<unsigned long>::iterator iter = time_schedule.find(this->timer);
 		if (iter != time_schedule.end())
 		{

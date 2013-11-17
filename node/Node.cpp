@@ -66,6 +66,7 @@ int Node::start(){
     while(!m_start_signaled){
         usleep(100);
     }
+    //nice(-5);
     run();
     m_node_network.send_end_signal();
     while(!m_disconnect_signaled){

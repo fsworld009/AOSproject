@@ -383,7 +383,7 @@
 	<pthread.h>
 	<iostream>
 
-1384676773 source:/home/leeyc/aosproject/node/LAKNode.cpp
+1384707868 source:/home/leeyc/aosproject/node/LAKNode.cpp
 	"LAKNode.h"
 	<unistd.h>
 	<iostream>
@@ -406,7 +406,7 @@
 	"../socket/Socket.h"
 	"../socket/SocketEventListener.h"
 
-1384702402 /home/leeyc/aosproject/socket/ServerSocket.h
+1384621896 /home/leeyc/aosproject/socket/ServerSocket.h
 	<sys/socket.h>
 	<netinet/in.h>
 	"../thread/Thread.h"
@@ -443,7 +443,7 @@
 	"Node.h"
 	<map>
 
-1384706251 source:/home/leeyc/aosproject/node/NodeNetwork.cpp
+1384707829 source:/home/leeyc/aosproject/node/NodeNetwork.cpp
 	"NodeNetwork.h"
 	"Node.h"
 	<unistd.h>
@@ -454,7 +454,7 @@
 	<arpa/inet.h>
 	<stdio.h>
 
-1384703063 source:/home/leeyc/aosproject/socket/ServerSocket.cpp
+1384644923 source:/home/leeyc/aosproject/socket/ServerSocket.cpp
 	"ServerSocket.h"
 	"ServerSocketEventListener.h"
 	<sys/socket.h>
@@ -465,14 +465,12 @@
 	<unistd.h>
 	<netdb.h>
 	<stdio.h>
-	<string.h>
 	<arpa/inet.h>
-	"../node/NodeNetwork.h"
 
 1384621896 source:/home/leeyc/aosproject/socket/ServerSocketEventListener.cpp
 	"ServerSocketEventListener.h"
 
-1384701476 source:/home/leeyc/aosproject/socket/Socket.cpp
+1384707400 source:/home/leeyc/aosproject/socket/Socket.cpp
 	"Socket.h"
 	<sys/socket.h>
 	<netinet/in.h>

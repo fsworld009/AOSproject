@@ -387,10 +387,10 @@ int NodeNetwork::AcceptThread::run(){
             //cerr << "FORCE READ " << message << endl;
             if(strcmp("START",message)==0){
                     m_parent->m_node->start_signal();
-                    cout << "RECEIVE START SIGNAL" << endl;
+                    cerr << "RECEIVE START SIGNAL" << endl;
             }else if(strcmp("END",message)==0){
                     m_parent->m_node->disconnect_signal();
-                    cout << "RECEIVE END SIGNAL" << endl;
+                    cerr << "RECEIVE END SIGNAL" << endl;
             }else{
                 from=0;
                 to=0;
@@ -402,7 +402,7 @@ int NodeNetwork::AcceptThread::run(){
                 bzero(buff,SOCKET_MAX_BUFFER_SIZE);
                 memcpy(&buff,message+2+sizeof(long),SOCKET_MAX_BUFFER_SIZE-2-sizeof(long));
 
-                cout << "NodeNetwork:: recv from=" << from << " to=" << to << " timestamp=" << timestamp <<  " msg: " << buff << endl;
+                cerr << "NodeNetwork:: recv from=" << from << " to=" << to << " timestamp=" << timestamp <<  " msg: " << buff << endl;
                 m_parent->m_logfile << "NodeNetwork:: recv from=" << from << " to=" << to << " timestamp=" << timestamp <<  " msg: " << buff << endl;
                 //m_node->receive(from,to,timestamp,buff);
                 if(to==m_parent->m_node_id){
