@@ -293,36 +293,7 @@ int NodeNetwork::onReceive(char* message,Socket* socket){
     timestamp = (int) ((message[2]<<3)|(message[3]<<2)|(message[4]<<1)|(message[5]));
 
     strcpy(buff,message+6);*/
-    if(strlen(message)==5){
-        if(strcmp("START",message)==0){
-            m_node->start_signal();
-        }
-    }else if(strlen(message)==3){
-        if(strcmp("END",message)==0){
-            m_node->disconnect_signal();
-            cout << "RECEIVE END" << endl;
-        }
-    }else{
-
-        unsigned int from=0,to=0,timestamp=0;
-        memcpy(&to,message,1);
-        memcpy(&from,message+1,1);
-        //to = (int) message[0];
-        //from = (int) message[1];
-        memcpy(&timestamp,message+2,sizeof(long));
-
-        char buff[SOCKET_MAX_BUFFER_SIZE];
-        bzero(buff,SOCKET_MAX_BUFFER_SIZE);
-        memcpy(&buff,message+2+sizeof(long),SOCKET_MAX_BUFFER_SIZE-2-sizeof(long));
-
-        cout << "NodeNetwork:: recv from=" << from << " to=" << to << " timestamp=" << timestamp <<  " msg: " << buff << endl;
-        m_logfile << "NodeNetwork:: recv from=" << from << " to=" << to << " timestamp=" << timestamp <<  " msg: " << buff << endl;
-        //m_node->receive(from,to,timestamp,buff);
-        if(to==m_node_id){
-            string msg_string(buff);
-            m_node->receive(msg_string);
-        }
-    }
+    cout << "NodeNetwork::recv response " << message << endl;
 
     return 0;
 }
@@ -354,6 +325,7 @@ int NodeNetwork::AcceptThread::disconnect(){
          close(m_socket);
         m_socket = -1;
     }
+    return 0;
 }
 
 int NodeNetwork::AcceptThread::run(){
@@ -394,6 +366,12 @@ int NodeNetwork::AcceptThread::run(){
     sockaddr_in* client_addr_in = (sockaddr_in*)&client_addr;
     int accept_socket;
     listen(m_socket,3);
+
+    char message[SOCKET_MAX_BUFFER_SIZE];
+    char buff[SOCKET_MAX_BUFFER_SIZE];
+    unsigned int from,to;
+    unsigned long timestamp;
+
     while(m_parent->m_thread_running){
         accept_socket = accept(m_socket, &client_addr, &client_len);
         getpeername(accept_socket,&client_addr, &client_len);
@@ -402,20 +380,36 @@ int NodeNetwork::AcceptThread::run(){
             cout << "ServerSocket: accept socket " << accept_socket << " from " << inet_ntoa(client_addr_in->sin_addr) << endl;
             //temp, need improved
             //m_parent->m_accepted_socket = new Socket(accept_socket);
-            char buff[1024];
-            bzero(buff,1024);
-            read(accept_socket,buff,1024);
+
+            bzero(message,SOCKET_MAX_BUFFER_SIZE);
+            read(accept_socket,message,SOCKET_MAX_BUFFER_SIZE);
             //unsigned int from=0,to=0;
-            cerr << "FORCE READ " << buff << endl;
-            if(strcmp(buff,"START") != 0){
-                unsigned int from=0,to=0;
-                unsigned long timestamp=0;
-                memcpy(&to,buff,1);
-                memcpy(&from,buff+1,1);
-                memcpy(&timestamp,buff+2,sizeof(long));
-                cerr << "FORCE PARSE" << from << " " << to <<   " " << timestamp << endl;
+            //cerr << "FORCE READ " << message << endl;
+            if(strcmp("START",message)==0){
+                    m_parent->m_node->start_signal();
+                    cout << "RECEIVE START SIGNAL" << endl;
+            }else if(strcmp("END",message)==0){
+                    m_parent->m_node->disconnect_signal();
+                    cout << "RECEIVE END SIGNAL" << endl;
+            }else{
+                from=0;
+                to=0;
+                timestamp=0;
+                memcpy(&to,message,1);
+                memcpy(&from,message+1,1);
+                memcpy(&timestamp,message+2,sizeof(long));
+
+                bzero(buff,SOCKET_MAX_BUFFER_SIZE);
+                memcpy(&buff,message+2+sizeof(long),SOCKET_MAX_BUFFER_SIZE-2-sizeof(long));
+
+                cout << "NodeNetwork:: recv from=" << from << " to=" << to << " timestamp=" << timestamp <<  " msg: " << buff << endl;
+                //m_logfile << "NodeNetwork:: recv from=" << from << " to=" << to << " timestamp=" << timestamp <<  " msg: " << buff << endl;
+                //m_node->receive(from,to,timestamp,buff);
+                if(to==m_parent->m_node_id){
+                    string msg_string(buff);
+                    m_parent->m_node->receive(msg_string);
+                }
             }
-            m_parent->onReceive(buff,0);
             close(accept_socket);
 
 
