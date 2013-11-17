@@ -8,12 +8,14 @@ using namespace std;
 
 Node::Node(int node_id): node_id(node_id), m_node_network(this, this->node_id)
 {
-    //ctor
-    m_start_signaled=false;
-    m_disconnect_signaled=false;
-    CS_time=0;
-    timer=0;
-    CS_timer=0;
+    	//ctor
+    	m_start_signaled=false;
+    	m_disconnect_signaled=false;
+    	CS_time=0;
+    	timer=0;
+    	CS_timer=0;
+	num_req = 0;
+	m_done = false;
 }
 
 //called by NodeNetwork when it received "START" signal
@@ -42,36 +44,34 @@ int Node::init(){
 
 
     //print set
+    /*cout << "CS TIME=" << CS_time << endl;
     set<int>::iterator iter;
     for (iter = quorum_set.begin(); iter != quorum_set.end(); iter++)
     {
         cout << *iter << " ";
     }
     cout << endl;
-    set<unsigned long>::iterator iter2;
-    for (iter2 = time_schedule.begin(); iter2 != time_schedule.end(); iter2++)
+    for (iter = time_schedule.begin(); iter != time_schedule.end(); iter++)
     {
-        cout << *iter2 << " ";
+        cout << *iter << " ";
     }
-    cout << endl;
+    cout << endl;*/
 
     m_node_network.init();
     return 0;
 }
 
 int Node::start(){
-    sleep(5);
     m_node_network.start();
     cout << "Waiting for signal..." << endl;
     while(!m_start_signaled){
         usleep(100);
     }
-    //nice(-5);
     run();
-    m_node_network.send_end_signal();
-    while(!m_disconnect_signaled){
+
+    /*while(!m_disconnect_signaled){
         usleep(100);
-    }
+    }*/
     m_node_network.close_me();
     return 0;
 }
@@ -83,12 +83,7 @@ int Node::send(unsigned int from,unsigned int to,unsigned int timestamp, string 
 
 int Node::parse_quorum(){
     char filepath[30];
-    if(node_id<=9){
-        sprintf(filepath,"quorum0%d",node_id);
-    }else{
-        sprintf(filepath,"quorum%d",node_id);
-    }
-
+    sprintf(filepath,"./config/quorum%d.txt",node_id);
 	ifstream ifs(filepath, ios::in);
 	string str;
 	while (getline(ifs, str))
@@ -102,12 +97,7 @@ int Node::parse_quorum(){
 
 int Node::parse_schedule(){
     char filepath[30];
-    if(node_id<=9){
-        sprintf(filepath,"config0%d",node_id);
-    }else{
-        sprintf(filepath,"config%d",node_id);
-    }
-
+    sprintf(filepath,"./config/config%d.txt",node_id);
 	ifstream ifs(filepath, ios::in);
 	string str;
     getline(ifs, str);
@@ -143,6 +133,20 @@ bool Node::get_message(string* message){
 
 int Node::disconnect_signal(){
     m_disconnect_signaled=true;
+    return 0;
+}
+
+bool Node::recv_end_signal(){
+    return m_disconnect_signaled;
+}
+
+bool Node::done_all_request(){
+    return m_done;
+}
+
+int Node::send_end_signal(){
+    m_done=true;
+    m_node_network.send_end_signal();
     return 0;
 }
 

@@ -63,6 +63,10 @@ private:
 
 	string message_string(MAKNode::Message msg);
 	MAKNode::Message string_message(string msgstr);
+
+	//debug
+	void printqueue();
+	void printresponse();
 };
 
 #endif // MAKNode_H

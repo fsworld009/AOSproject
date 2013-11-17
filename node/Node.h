@@ -19,10 +19,10 @@ enum MessageType
         ACK,
         RELAY,
         TOKEN,
-		LOCK,
-		FAIL,
-		INQUIRE,
-		RELINQUISH
+	LOCK,
+	FAIL,
+	INQUIRE,
+	RELINQUISH
     };
 
 class Node
@@ -41,6 +41,10 @@ class Node
         int start_signal();
         int disconnect_signal();
 
+        bool recv_end_signal();
+        int send_end_signal();
+        bool done_all_request();
+
 
         bool get_message(string* msg);
 
@@ -52,6 +56,8 @@ class Node
         set<unsigned long> time_schedule;
         unsigned long timer;
         unsigned long CS_timer;
+
+	int num_req;
         int send_access_cs_msg();
         int send_finish_cs_msg();
         int send_request_cs_msg();
@@ -63,6 +69,7 @@ class Node
         int parse_quorum();
         int parse_schedule();
         int virtual run()=0;
+        bool m_done;
         bool end();
         MutexLock m_queue_lock;
         queue<string> m_message_queue;

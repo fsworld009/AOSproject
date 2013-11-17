@@ -69,7 +69,9 @@ class LAKNode: public Node
 
         string message_string(LAKNode::Message msg);
         LAKNode::Message string_message(string msgstr);
-
+	
+	//debug
+	void printState();
 };
 
 #endif // LAKNODE_H

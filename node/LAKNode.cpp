@@ -18,44 +18,32 @@ LAKNode::~LAKNode()
 }
 
 int LAKNode::init(){
-    this->quorum_set.clear();
-    this->time_schedule.clear();
-    Node::init();
-    this->timer=0;
+    	this->quorum_set.clear();
+    	this->time_schedule.clear();
+    	Node::init();
+    	this->timer=0;
+	this->seq = 1;
+	this->expt_resp = -1;
+	this->token_list.clear();
+	this->acked_node.clear();
+	this->is_inCS = false;
 
-    //assume 1 has token
+	//assume 1 has token
 
 	if ((*this->quorum_set.begin()) == 1)
 	{
-        this->seq = 1;
-		this->expt_resp = -1;
 		this->token_holder = 1;
-
-		this->token_list.clear();
-
-		this->acked_node.clear();
-
-		this->is_inCS = false;
-		if (node_id == 1){
+		if (node_id == 1)
 			this->has_token = true;
-		}else{
+		else
 			this->has_token = false;
-        }
 	}
 	else
 	{
-		this->seq = 1;
-		this->expt_resp = -1;
 		this->token_holder = -1;
-
-		this->token_list.clear();
-		this->acked_node.clear();
-
-		this->is_inCS = false;
 		this->has_token = false;
-
-
 	}
+
 	return 0;
 }
 
@@ -67,11 +55,9 @@ int LAKNode::run(){
     int milisec = 1;
     timespec req = {0};
     req.tv_sec = 0;
-    //req.tv_nsec = milisec * 1000000L;
-    req.tv_nsec = milisec * 10000L;
+    req.tv_nsec = milisec * 1000000L;
 
-
-	while (this->timer < 20000)
+	while (!done_all_request() || !recv_end_signal())
 	{
         //handle receive messages
         while(get_message(&recv_message)){
@@ -81,22 +67,23 @@ int LAKNode::run(){
 
 		this->timer+=1;
 		if(CS_timer==0 && is_inCS){
-            finishCS();
+            		finishCS();
 		}else if(CS_timer>0){
-            CS_timer-=1;
+           		CS_timer-=1;
 		}
-		//cout << timer << endl;
 		if(timer%10000==0){
-            cerr << timer << endl;
+            cout << timer << endl;
 		}
 
+		//cout << CS_timer << endl;
 		set<unsigned long>::iterator iter = time_schedule.find(this->timer);
 		if (iter != time_schedule.end())
 		{
-            send_request_cs_msg();
+			num_req++;
+            		send_request_cs_msg();
 			this->send_request();
 		}
-		nanosleep(&req, (timespec *)NULL);
+		nanosleep(&req, 0);
 	}
     cout << "END" << endl;
     return 0;
@@ -169,7 +156,7 @@ int LAKNode::receive_message(string msgstr){
 		receive_token(msg);
 		break;
 	default:
-        printf("Unkown message type received!\n");
+        	printf("Unkown message type received!\n");
 		break;
 	}
 	return 0;
@@ -178,7 +165,7 @@ int LAKNode::receive_message(string msgstr){
 void LAKNode::receive_request(LAKNode::Message msg)
 {
 	if (this->seq < msg.seq)
-		this->seq = msg.seq;
+		this->seq = ++msg.seq;
 	if (has_token)
 	{
 		if (is_inCS)
@@ -187,6 +174,7 @@ void LAKNode::receive_request(LAKNode::Message msg)
 		}
 		else
 		{
+			token_list.insert(msg);
 			send_token(msg.from);
 			send_release();
 		}
@@ -217,10 +205,6 @@ void LAKNode::receive_ack(LAKNode::Message msg)
 void LAKNode::receive_token(LAKNode::Message msg)
 {
 	if(msg.req_list.size()==0){
-        return;
-    }else if (msg.req_list.begin()->from != this->node_id){
-		send_token(msg.from);
-	}else{
 		this->has_token = true;
 		this->token_holder = this->node_id;
 
@@ -230,7 +214,27 @@ void LAKNode::receive_token(LAKNode::Message msg)
 			if ((*iter) != this->node_id)
 				send_receive();
 		}
-		accessCS();
+	        return;
+    	}
+	else
+	{
+ 		if (msg.req_list.begin()->from != this->node_id)
+		{
+			send_token(msg.from);
+		}
+		else
+		{
+			this->has_token = true;
+			this->token_holder = this->node_id;
+
+			set<int>::iterator iter;
+			for (iter = quorum_set.begin(); iter != quorum_set.end(); iter++)
+			{
+				if ((*iter) != this->node_id)
+					send_receive();
+			}
+			accessCS();
+		}
 	}
 }
 
@@ -241,7 +245,8 @@ void LAKNode::receive_receive(LAKNode::Message msg)
 
 void LAKNode::receive_release(LAKNode::Message msg)
 {
-	this->token_holder = -1;
+	if(this->token_holder != this->node_id)
+		this->token_holder = -1;
 }
 
 void LAKNode::receive_relay(LAKNode::Message msg)
@@ -259,18 +264,12 @@ void LAKNode::receive_relay(LAKNode::Message msg)
 			send_token(msg.relay);
 			send_release();
 		}
-
-
 	}
 }
-
-
-
 
 //actions
 void LAKNode::send_token(int to)
 {
-
 	LAKNode::Message msg;
 	msg.from = this->node_id;
 	msg.to = to;
@@ -278,7 +277,7 @@ void LAKNode::send_token(int to)
 	msg.req_list = this->token_list;
 
 	send(this->node_id, to, timer, message_string(msg));
-	this->token_holder = -1;
+	this->token_holder = to;
 	this->has_token = false;
 	this->token_list.clear();
 }
@@ -341,18 +340,16 @@ void LAKNode::send_relay(int from, int seq)
 
 void LAKNode::accessCS()
 {
-    this->is_inCS = true;
-    this->CS_timer = CS_time;
-	cout << "The node is entering CS now ..." << endl;
-    send_access_cs_msg();
-
-
+    	this->is_inCS = true;
+    	this->CS_timer = CS_time;
+		cout << "The node is entering CS now ..." << endl;
+	send_access_cs_msg();
 }
 
 void LAKNode::finishCS()
 {
-    cout << "The node is exiting CS now ..." << endl;
-    send_finish_cs_msg();
+    	cout << "The node is exiting CS now ..." << endl;
+    	send_finish_cs_msg();
 	if (token_list.empty() != true)
 	{
         //token_list.erase(token_list.begin());
@@ -360,6 +357,9 @@ void LAKNode::finishCS()
 		send_release();
 	}
 	this->is_inCS = false;
+	if(this->num_req == this->time_schedule.size())
+		this->send_end_signal();
+
 }
 
 string LAKNode::message_string(Message msg)
@@ -372,7 +372,7 @@ string LAKNode::message_string(Message msg)
 		ss << msg.type << " " << msg.from << " " << msg.to << " " << msg.seq;
 		str = ss.str();
 		break;
-    case RELAY:
+    	case RELAY:
 		ss << msg.type << " " << msg.from << " " << msg.to << " " << msg.seq << " " << msg.relay;
 		str = ss.str();
 		break;
@@ -466,4 +466,30 @@ LAKNode::Message LAKNode::string_message(string msgstr)
 		break;
 	}
     return msg;
+}
+
+
+void LAKNode::printState()
+{
+	cout<<"token holder: "<<this->token_holder<<endl;
+	cout<<"expt_resp: "<<this->expt_resp<<endl;
+	cout<<"is_inCS: "<<this->is_inCS<<endl;
+	cout<<"has_token: "<<this->has_token<<endl;
+	cout<<"seq: "<<this->seq<<endl;
+
+	cout<<"acked_node: ";
+	set<int>::iterator a_iter;
+	for(a_iter = this->acked_node.begin(); a_iter != this->acked_node.end(); a_iter++)
+	{
+		cout<<(*a_iter)<<" ";
+	}
+	cout<<endl;
+
+	cout<<"token list : ";
+	set<LAKNode::Message>::iterator iter;
+	for(iter = this->token_list.begin(); iter != this->token_list.end(); iter++)
+	{
+		cout<<"("<<(*iter).from<<" "<<(*iter).seq <<" "<<(*iter).type<<")";
+	}
+	cout<<endl;
 }
