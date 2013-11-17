@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
                         }else{
                             system("./switch");
                         }
-                    }else if(strcmp(buff,"END")==0){
+                    }else if(strcmp(buff,"EXIT")==0){
                         //send an invalid msg to switch
                         close(client_sock);
                         close(server_sock);

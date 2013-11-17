@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include <linux/socket.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
 #include <stdlib.h>
@@ -31,6 +31,7 @@ int forward (char* msg, char* to_addr)
 	}
 	
 	sockfd = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+    
 	if (sockfd == -1)
 	{
 		return 1;
@@ -40,16 +41,17 @@ int forward (char* msg, char* to_addr)
 	(*server_addr).sin_port = htons(num);
 	if (connect(sockfd, result->ai_addr, result->ai_addrlen) == -1)
 	{
-		return 2;
+        return 2;
 	}
 	
-	if (write(sockfd, msg, 1024) != 1024)
+
+	//if (write(sockfd, msg, strlen(msg)) != strlen(msg))
+    if (write(sockfd, msg, strlen(msg)+1) != strlen(msg)+1)
 	{
-		return 3;
+		
+        return 3;
 	}
-	
-	
-	close(sockfd);
+    close(sockfd);
 	return 0;
 }
 
@@ -62,15 +64,19 @@ void handle( unsigned int client_sock, int net_status)
 	ofstream log_file;
 	
 	memset(buffer, 0x00, sizeof(buffer));
-	recv(client_sock, buffer, 1024, 0);
+   // cerr <<"recv" << endl;
+	read(client_sock, buffer, 1024);
+    //cerr <<"recv end" << endl;
 	node_num = strtol(buffer, NULL, 10);
+    
+    cerr << "Node num " << node_num << endl;
 	
 	if (node_num > 45 || node_num == 0)
 	{
-		send(client_sock, "1", 1, 0); //Invalid Node Number
+		send(client_sock, "1", 2, 0); //Invalid Node Number
 		return;
 	}
-	send(client_sock, "0", 1, 0); //respond that node number is valid
+	send(client_sock, "0", 2, 0); //respond that node number is valid
 	
 	if( node_num < 10)
 	{
@@ -86,8 +92,9 @@ void handle( unsigned int client_sock, int net_status)
 	
 	while (1)
 	{
-		memset(buffer, 0x00, 1024);
-		int msg_length = recv(client_sock, buffer, 1024, 0);
+		//memset(buffer, 0x00, 1024);
+        bzero(buffer,1024);
+		int msg_length = read(client_sock, buffer, 1024);
 		if( msg_length == 0 )
 		{
 			cout << "Peer Shutdown" << endl;
@@ -99,20 +106,27 @@ void handle( unsigned int client_sock, int net_status)
 			break;
 		}
 		
-		unsigned int t = buffer[0] & 0xff;
+		//unsigned int t = (int) buffer[0];
+        unsigned int t = 0;
+        memcpy(&t,buffer,1);
+        //log_file.open(log_name, ios::out | ios::binary | ios::app);    //temp code by Andy
+        cerr << "RECV TO " << t << endl;
+        //cout.flush();
 		log_file << buffer << endl;
 		log_file << msg_length << endl;
+        
+        
 		
 		if (t == 255) //Control message
 		{
-			send(client_sock, "0", 1, 0);
+			send(client_sock, "0", 2, 0);
 			continue; //all messages are logged. These are only logged
 		}
 		
 		else if( net_status == 3 && (rand() % 10) == 0  && t != 44)
 		{
 			//log_file << "dropped" << endl;
-			send(client_sock, "0", 1, 0);
+			send(client_sock, "0", 2, 0);
 			continue;
 		}
 		
@@ -124,7 +138,7 @@ void handle( unsigned int client_sock, int net_status)
 		
 		if (t > 45 || t == 0) //If "To" is invalid, exit
 		{
-			send(client_sock, "0", 1, 0); // 0 means no problem, there's never a problem exiting
+			send(client_sock, "0", 2, 0); // 0 means no problem, there's never a problem exiting
 			break;
 		}
 		else if (t < 10) //format "To" Hostname
@@ -135,9 +149,11 @@ void handle( unsigned int client_sock, int net_status)
 		{
 			sprintf(to_addr, "net%d.utdallas.edu", buffer[0]);
 		}
-		
+        //cerr << "Forwarding to: " << to_addr << endl; //DELTE THIS
+		//log_file << "Forwarding to: " << to_addr << endl; //DELTE THIS
+        //log_file.close();       //temp code by Andy
 		int temp = forward(buffer, to_addr);
-		send(client_sock, &temp, 4, 0);
+		send(client_sock, &temp, 5, 0);
 	}
 
 	close(client_sock);
@@ -206,11 +222,13 @@ int main(int argc, char *argv[])
 	while(1)
 	{
 		client_sock = accept(server_sock, (struct sockaddr *)&client_addr, (socklen_t*) &addr_len);
+        cerr << "fork" << endl;
 		pid = fork();
 
 		if (pid > 0)
 		{
-			handle(client_sock, net_status);
+			cerr << "handle" << endl;
+            handle(client_sock, net_status);
 			return 0;
 		}
 

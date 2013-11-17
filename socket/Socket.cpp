@@ -158,7 +158,7 @@ int Socket::disconnect(){
             m_messages.pop();
         }
         m_queue_lock.unlock();
-        cout << "Socket " << socket_num << " : disconnected" << endl;
+       // cout << "Socket " << socket_num << " : disconnected" << endl;
         m_socket = -1;
 
     }
@@ -184,7 +184,7 @@ int Socket::SendThread::run(){
                 m_parent->m_messages.pop();
                 result = write(m_parent->m_socket,msg,SOCKET_MAX_BUFFER_SIZE);
                 if(result ==-1 || result == 0){
-                    cout << "Socket: send thread close" << endl;
+                    //cout << "Socket: send thread close" << endl;
                     m_parent->disconnect();
                     return 0;
                 }else{
@@ -213,8 +213,7 @@ int Socket::ReceiveThread::run(){
         bzero(m_parent->m_buffer,SOCKET_MAX_BUFFER_SIZE);
         result = read(m_parent->m_socket,m_parent->m_buffer,SOCKET_MAX_BUFFER_SIZE);
         if(result ==-1 || result == 0){
-            cout << "READ " << result << endl;
-            cout << "Socket: receive thread close" << endl;
+            //cout << "Socket: receive thread close" << endl;
             m_parent->disconnect();
             return 0;
         }else{

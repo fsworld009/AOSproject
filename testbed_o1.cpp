@@ -204,7 +204,7 @@ void contact_servers(int num_nodes, char* msg, int port)
 		int result = forward(msg, to_addr, port);
 		if (result != 0)
 		{
-			cout << "Contacting listening server " << current << " failed: " << result << endl;
+			//cout << "Contacting listening server " << current << " failed: " << result << endl;
 		}
 		
 		current ++;
@@ -228,7 +228,7 @@ void contact_servers(int num_nodes, char* msg, int port)
 	int result = forward(msg, to_addr, port);
 	if (result != 0)
 	{
-		cout << "Contacting listening server " << current << " failed: " << result << endl;
+		//cout << "Contacting listening server " << current << " failed: " << result << endl;
 	}
 	
 	return;
@@ -554,34 +554,29 @@ data* get_results(int num_nodes)
 		ifile.open( fname, ios::in | ios::binary );
 		if( ! ifile.is_open() )
 		{
-			cout << "Failed to open " << fname << endl;
 			continue;
 		}
-		cout << "Opened " << fname << endl;
+		
 		ifile >> buffer;
 		
 		while( ! ifile.eof())
 		{
 			ifile >> temp_length;
-			//printf("Buffer[0] = %x\n", buffer[0]);
 			if( (buffer[0] & 0xff) != 255) //only reading control messages
 			{
 				d->msg_count ++;
 				total_length += temp_length;
 				ifile >> buffer;
-				//cout << "Not a control Message" << endl;
 				continue;
 			}
 			
 			if( buffer[1] == '3') //make this message- requesting cs
 			{
-				//cout << "Requesting CS..." << endl;
 				current->node = trans[x];
 				memcpy( &(current->requested) , &(buffer[2]) , sizeof(long)); //change all times to longs
 			}
 			else
 			{
-				ifile >> buffer;
 				continue;
 			}
 			
@@ -591,7 +586,6 @@ data* get_results(int num_nodes)
 				ifile >> temp_length;
 				d->msg_count ++;
 				ifile >> buffer;
-				//cout << "Not a control Message" << endl;
 			}
 			
 			if( ifile.eof() || buffer[1] != '1' ) //we reach eof before finding CS enter 
@@ -602,12 +596,10 @@ data* get_results(int num_nodes)
 				current->next->prev = current;
 				
 				current = current->next;
-				ifile >> buffer;
 				continue;
 			}
 			
 			memcpy( &(current->started), &(buffer[2]), sizeof(long));
-			//cout << "Entering CS " << current->started << endl;
 			
 			ifile >> buffer;
 			while( (buffer[0] & 0xff) != 255 && ! ifile.eof()) //looking for leaving CS
@@ -615,7 +607,6 @@ data* get_results(int num_nodes)
 				ifile >> temp_length;
 				count ++;
 				ifile >> buffer;
-				//cout << "Not a control Message" << endl;
 			}
 			
 			if( ifile.eof() || buffer[1] != '2' ) //we reach eof before finding CS finish 
@@ -626,12 +617,10 @@ data* get_results(int num_nodes)
 				current->next->prev = current;
 				
 				current = current->next;
-				ifile >> buffer;
 				continue;
 			}
 			
 			memcpy( &(current->finished), &(buffer[2]), sizeof(long));
-			//cout << "Leaving CS " << current->finished << endl;
 			current-> next = (crit_sec*) malloc(sizeof(crit_sec));
 			memset( current->next, 0x00, sizeof(crit_sec));
 			current->next->prev = current;
@@ -639,7 +628,6 @@ data* get_results(int num_nodes)
 			current = current->next;
 			ifile >> buffer;
 		}
-		//cout << "Reached EOF" << endl;
 		
 		ifile.close();
 	}
@@ -684,6 +672,7 @@ void term_wait(int num_nodes, unsigned int server_sock)
 		recv(client_sock, buffer, 1024, 0);
 		//send(client_sock, "\xff", 1, 0);
 		
+		cout<< "Got somethin' here..." << endl;
 		count ++;
 		cout << count << " / " << num_nodes << endl;
 		
@@ -750,14 +739,10 @@ int main(int argc, char *argv[])
 	data* res1 = get_results(c.num_nodes);
 	clear_logs();
 	
-	cout << "Results 1 collected" << endl;
-	
 	//switch algorithm
 	memset(msg, 0x00, sizeof(msg));
 	sprintf(msg, "1");
-	cout << "Contacting for Round 2" << endl;
 	contact_servers(c.num_nodes, msg, 4567);
-	cout << "Contact complete" << endl;
 	sleep(20);
 	
 	//run algorithm 2
@@ -775,6 +760,7 @@ int main(int argc, char *argv[])
 	memset(msg, 0x00, sizeof(msg));
 	sprintf(msg, "EXIT");
 	contact_servers(c.num_nodes, msg, 4567);
+	sleep(20);
 	
 	//collect results
 	data* res2 = get_results(c.num_nodes);

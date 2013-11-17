@@ -39,7 +39,7 @@ int MAKNode::run(){
     //req.tv_nsec = milisec * 1000000L;
     req.tv_nsec = milisec * 10000L;
 
-	while (this->timer < 180000)
+	while (this->timer < 20000)
 	{
         //handle receive messages
         while(get_message(&recv_message)){
