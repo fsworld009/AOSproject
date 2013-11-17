@@ -37,22 +37,34 @@ config read_config()
 	config c;
 	memset(&c, 0x00, sizeof(c));
 	
-	config_file >> buffer; 
+	getline(config_file, buffer); 
 	while( ! config_file.eof())
 	{
-		if( buffer[0] == '#' )
+		
+		if( buffer[0] == '#' || strlen(buffer.c_str()) == 0 )
 		{
+			getline(config_file, buffer);
 			continue;
 		}
 		
-		if( buffer == "request_start")
+		//cout << buffer << endl;
+		
+		if( strcmp(buffer.c_str(), "request_start") == 0)
 		{
-			while (buffer != "request_end")
+			getline(config_file, buffer);
+			while (strcmp(buffer.c_str(), "request_end") != 0)
 			{
+				if( buffer[0] == '#'  || strlen(buffer.c_str()) == 0)
+				{
+					getline(config_file, buffer);
+					continue;
+				}
+				
 				istringstream iss(buffer);
 				string result;
 				getline(iss, result, '('); //Finish parsing this
 				getline(iss, result, ',');
+				//cout << "Result: " << result << endl;
 				
 				int node = strtol(result.c_str(), NULL, 10);
 				req* current = &(c.reqlist[node]);
@@ -84,7 +96,7 @@ config read_config()
 				
 				current->time = milliseconds;
 				
-				config_file >> buffer;
+				getline(config_file, buffer);
 				
 			}
 			continue;
@@ -133,7 +145,7 @@ config read_config()
 			
 		}
 		
-		config_file >> buffer;
+		getline(config_file, buffer);
 	}
 	
 	return c;

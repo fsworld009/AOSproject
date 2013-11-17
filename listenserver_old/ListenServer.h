@@ -29,7 +29,7 @@ class ListenServer: public ServerSocketEventListener, SocketEventListener
         ServerSocket m_server_socket;
         int m_port;
         
-        /*
+        
         class NodeThread: public Thread
         {
             public:
@@ -41,7 +41,7 @@ class ListenServer: public ServerSocketEventListener, SocketEventListener
                 Node* m_node;
         };
         
-        NodeThread* m_node_thread;*/
+        NodeThread* m_node_thread;
 };
 
 #endif // ECHOSERVER_H
