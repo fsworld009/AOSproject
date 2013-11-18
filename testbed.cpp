@@ -204,7 +204,7 @@ int forward (char* msg, char* to_addr, int port)
 		return 3;
 	}
 	
-	
+	usleep(100);
 	close(sockfd);
 	return 0;
 }
@@ -716,18 +716,18 @@ void term_wait(int num_nodes, unsigned int server_sock)
 		
 		count ++;
 		cout << count << " / " << num_nodes << endl;
-		
+		usleep(1000);
 		close(client_sock);
 		
 	}
 	
 }
 
-unsigned int term_listen()
+unsigned int term_listen(int aport)
 {
 	struct sockaddr_in server_addr;
 	unsigned int server_sock;
-	int port = 6789;
+	int port = aport;
 	
 	server_sock = socket(AF_INET, SOCK_STREAM, 0);
 	 
@@ -748,6 +748,10 @@ int main(int argc, char *argv[])
 {
 	//read in config
 	config c = read_config();
+	int lport, aport;
+	ifstream iports("ports.txt");
+	iports >> lport >> aport;
+	iports.close();
 	
 	//quorums
 	vector<Quorum> quorums = QuorumAssignment(c.num_nodes);
@@ -757,24 +761,24 @@ int main(int argc, char *argv[])
 	write_config(c);
 	
 	//create server to listen for termination
-	unsigned int server_sock = term_listen();
+	unsigned int server_sock = term_listen(aport);
 	
 	//contact necessary servers to start
 	char msg[10];
 	memset(msg, 0x00, sizeof(msg));
 	sprintf(msg, "0");
-	contact_servers(c.num_nodes, msg, 4567);
+	contact_servers(c.num_nodes, msg, lport);
 	sleep(20);
 	
 	//run algorithm 1
 	memset(msg, 0x00, sizeof(msg));
 	sprintf(msg, "START");
-	contact_servers(c.num_nodes, msg, 6789);
+	contact_servers(c.num_nodes, msg, aport);
 	term_wait(c.num_nodes, server_sock);
 	
 	memset(msg, 0x00, sizeof(msg));
 	sprintf(msg, "END");
-	contact_servers(c.num_nodes, msg, 6789);
+	contact_servers(c.num_nodes, msg, aport);
 	
 	//collect results
 	data* res1 = get_results(c.num_nodes);
@@ -786,25 +790,25 @@ int main(int argc, char *argv[])
 	memset(msg, 0x00, sizeof(msg));
 	sprintf(msg, "1");
 	cout << "Contacting for Round 2" << endl;
-	contact_servers(c.num_nodes, msg, 4567);
+	contact_servers(c.num_nodes, msg, lport);
 	cout << "Contact complete" << endl;
 	sleep(20);
 	
 	//run algorithm 2
 	memset(msg, 0x00, sizeof(msg));
 	sprintf(msg, "START");
-	contact_servers(c.num_nodes, msg, 6789);
+	contact_servers(c.num_nodes, msg, aport);
 	term_wait(c.num_nodes, server_sock);
 	
 	memset(msg, 0x00, sizeof(msg));
 	sprintf(msg, "END");
-	contact_servers(c.num_nodes, msg, 6789);
+	contact_servers(c.num_nodes, msg, aport);
 	sleep(20);
 	
 	//tell listening servers to exit
 	memset(msg, 0x00, sizeof(msg));
 	sprintf(msg, "EXIT");
-	contact_servers(c.num_nodes, msg, 4567);
+	contact_servers(c.num_nodes, msg, lport);
 	
 	//collect results
 	data* res2 = get_results(c.num_nodes);

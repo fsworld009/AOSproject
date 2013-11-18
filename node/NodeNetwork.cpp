@@ -55,7 +55,13 @@ int NodeNetwork::init(){
         }
     }*/
 
-    m_port = NODE_SOCKET_PORT;
+    FILE* fp = fopen("ports.txt","r");
+
+    fscanf(fp,"%d",&m_port);
+    fscanf(fp,"%d",&m_port);
+    fclose(fp);
+    
+    //m_port = NODE_SOCKET_PORT;
     cout << "Node id is " << m_node_id << endl;
     //m_switch_netid = 0;
     m_switch_netid = 5*((m_node_id/5)+1);
@@ -343,7 +349,7 @@ int NodeNetwork::AcceptThread::run(){
     server = gethostbyname("localhost");    //gethostname only works with IPv4
     bcopy((char *)server->h_addr,(char *)&m_addr.sin_addr.s_addr,server->h_length);
     m_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    m_addr.sin_port = htons(NODE_SOCKET_PORT);
+    m_addr.sin_port = htons(m_parent->m_port);
 
 
     cout << "Addr: " << inet_ntoa(m_addr.sin_addr) << " Port: " << ntohs(m_addr.sin_port) << endl;
@@ -410,6 +416,7 @@ int NodeNetwork::AcceptThread::run(){
                     m_parent->m_node->receive(msg_string);
                 }
             }
+            usleep(1000);
             close(accept_socket);
 
 

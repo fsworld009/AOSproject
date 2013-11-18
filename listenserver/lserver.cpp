@@ -6,9 +6,8 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <netdb.h>
-#include "../Socket/Socket.h"
+#include "../socket/Socket.h"
 #define LSERVER_BUFFER_SIZE 1024
-#define LSERVER_PORT 4567
 
 enum ROLE{NODE, SWITCH} ;
 
@@ -45,6 +44,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in server_addr/*, client_addr*/;
 	unsigned int server_sock, client_sock, ids;
 	int addr_len, port, net_status;
+    int s_port;
 
 	/*if (argc != 2)
 	{
@@ -53,7 +53,12 @@ int main(int argc, char *argv[])
 	}*/
 	
 	//net_status = strtol( argv[1], NULL, 10 );
-	port = LSERVER_PORT;
+	//port = LSERVER_PORT;
+    FILE* fp = fopen("ports.txt","r");
+
+    fscanf(fp,"%d",&port);
+    fscanf(fp,"%d",&s_port);
+    fclose(fp);
 
 	pthread_attr_t attr;
 	pthread_t threads;
@@ -134,7 +139,7 @@ int main(int argc, char *argv[])
                         }else{
                             sprintf(sad,"net%d.utdallas.edu",switch_netid);
                         }
-                        socket.connectHost(sad,6789);
+                        socket.connectHost(sad,s_port);
                         char msg[10];
                         msg[0] = 46;
                         socket.send(msg);

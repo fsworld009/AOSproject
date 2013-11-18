@@ -12,9 +12,9 @@
 #define PEND_CONNECTIONS (100)
 using namespace std;
 
-int forward (char* msg, char* to_addr)
+int forward (char* msg, char* to_addr, int aport)
 {
-	int num = 6789;	
+	int num = aport;	
 	int sockfd;
 	struct addrinfo *result;
 	struct sockaddr_in *server_addr;
@@ -43,17 +43,17 @@ int forward (char* msg, char* to_addr)
 		return 2;
 	}
 	
-	if (write(sockfd, msg, strlen(msg) + 1) != strlen(msg))
+	if (write(sockfd, msg, 1024) != 1024)
 	{
 		return 3;
 	}
 	
-	
+	usleep(1000);
 	close(sockfd);
 	return 0;
 }
 
-void handle( unsigned int client_sock, int net_status)
+void handle( unsigned int client_sock, int net_status, int aport)
 {
 	char buffer[1024];
 	char to_addr[18];
@@ -99,6 +99,13 @@ void handle( unsigned int client_sock, int net_status)
 			break;
 		}
 		
+		char b = buffer[msg_length]; //cut out length of padded 0x00s at the end
+		while( b == 0x00 && msg_length > 0)
+		{
+			msg_length --;
+			b = buffer[msg_length];
+		}
+		
 		unsigned int t = buffer[0] & 0xff;
 		log_file << buffer << endl;
 		log_file << msg_length << endl;
@@ -136,7 +143,7 @@ void handle( unsigned int client_sock, int net_status)
 			sprintf(to_addr, "net%d.utdallas.edu", buffer[0]);
 		}
 		
-		int temp = forward(buffer, to_addr);
+		int temp = forward(buffer, to_addr, aport);
 		send(client_sock, &temp, 4, 0);
 	}
 
@@ -181,7 +188,13 @@ int main(int argc, char *argv[])
 		//3 for unreliable
 		
 	cout << "net_status = " << net_status << endl;
-	port = 6789;
+	
+	int lport, aport;
+	ifstream iports("ports.txt");
+	iports >> lport >> aport;
+	iports.close();
+	
+	port = aport;
 
 	pthread_attr_t attr;
 	pthread_t threads;
@@ -210,7 +223,7 @@ int main(int argc, char *argv[])
 
 		if (pid > 0)
 		{
-			handle(client_sock, net_status);
+			handle(client_sock, net_status, aport);
 			return 0;
 		}
 

@@ -62,16 +62,18 @@ int Node::init(){
 }
 
 int Node::start(){
+    sleep(5);
     m_node_network.start();
     cout << "Waiting for signal..." << endl;
     while(!m_start_signaled){
         usleep(100);
     }
     run();
+    this->send_end_signal();
 
-    /*while(!m_disconnect_signaled){
+    while(!m_disconnect_signaled){
         usleep(100);
-    }*/
+    }
     m_node_network.close_me();
     return 0;
 }

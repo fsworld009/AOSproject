@@ -4,7 +4,7 @@
 #include <vector>
 #include "../socket/Socket.h"
 #include "../socket/SocketEventListener.h"
-#define NODE_SOCKET_PORT 6789
+
 using namespace std;
 
 /*
@@ -40,6 +40,7 @@ class NodeNetwork: public SocketEventListener
 
         int close_me();
         int send_end_signal();
+        int m_port;
     protected:
     private:
         int getHostName(int netId,char* host);
@@ -60,7 +61,7 @@ class NodeNetwork: public SocketEventListener
 
         Node* m_node;
 
-        int m_port;
+        
         std::ofstream m_logfile;
 
         bool m_thread_running;

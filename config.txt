@@ -21,15 +21,23 @@ net_congested=0
 
 #res_alloc_time specifies the time it takes for critical section execution
 #	minutes:seconds:milliseconds
-res_alloc_time=0:0:1
+res_alloc_time=0:0:5
 
 #request_start indicates the start of the list of request times
 request_start
 
 #(node,minutes:seconds:milliseconds)
 (1,0:0:10)
-(2,0:0:20)
-(3,0:0:30)
+(1,0:0:50)
+(1,0:0:100)
+(1,0:0:120)
+(2,0:0:10)
+(2,0:0:55)
+(2,0:5:120)
+(3,0:0:5)
+(3,0:10:200)
+(4,0:0:10)
+(4,0:15:500)
 #(4,0:0:40)
 #request_end indicates the end of the list of request times
 request_end

@@ -57,11 +57,12 @@ int LAKNode::run(){
     req.tv_sec = 0;
     req.tv_nsec = milisec * 1000000L;
 
-    if(time_schedule.size()==0){
-        this->send_end_signal();
-    }
+    //if(time_schedule.size()==0){
+    //    this->send_end_signal();
+    //}
 
-	while (!done_all_request() || !recv_end_signal())
+	//while (!done_all_request() || !recv_end_signal())
+    while(timer< 1000)
 	{
         //handle receive messages
         while(get_message(&recv_message)){
@@ -83,7 +84,7 @@ int LAKNode::run(){
 		set<unsigned long>::iterator iter = time_schedule.find(this->timer);
 		if (iter != time_schedule.end())
 		{
-			num_req++;
+			this->num_req++;
             		send_request_cs_msg();
 			this->send_request();
 		}
@@ -351,8 +352,13 @@ void LAKNode::accessCS()
 }
 
 void LAKNode::finishCS()
-{
+{	
     	cout << "The node is exiting CS now ..." << endl;
+	//cout<<"num_req:"<<this->num_req<<endl;
+	//cout<<"schedule size:"<<this->time_schedule.size()<<endl;
+	//if(this->num_req == this->time_schedule.size())
+		//this->send_end_signal();
+
     	send_finish_cs_msg();
 	if (token_list.empty() != true)
 	{
@@ -361,9 +367,6 @@ void LAKNode::finishCS()
 		send_release();
 	}
 	this->is_inCS = false;
-	if(this->num_req == this->time_schedule.size())
-		this->send_end_signal();
-
 }
 
 string LAKNode::message_string(Message msg)

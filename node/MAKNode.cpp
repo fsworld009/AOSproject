@@ -35,11 +35,12 @@ int MAKNode::run()
     req.tv_sec = 0;
     req.tv_nsec = milisec * 1000000L;
 
-    if(time_schedule.size()==0){
-        this->send_end_signal();
-    }
+    //if(time_schedule.size()==0){
+    //    this->send_end_signal();
+    //}
 
-	while (!done_all_request() || !recv_end_signal())
+	//while (!done_all_request() || !recv_end_signal())
+    while(timer< 1000)
 	{
 	        //handle receive messages
         while(get_message(&recv_message))
@@ -291,7 +292,12 @@ void MAKNode::accessCS()
 void MAKNode::finishCS()
 {
 	cout << "The node is exiting CS now ..." << endl;
-    	send_finish_cs_msg();
+	//cout<<"num_req:"<<this->num_req<<endl;
+	//cout<<"schedule size:"<<this->time_schedule.size()<<endl;
+	//if(this->num_req == this->time_schedule.size())
+		//this->send_end_signal();   
+ 	
+	send_finish_cs_msg();
     	this->is_locked = false;
 	this->response_map.clear();
 	this->inquiry_list.clear();
@@ -336,9 +342,6 @@ void MAKNode::finishCS()
 	}
 	else
 		send_locked(msg.from);
-
-	if(num_req == this->time_schedule.size())
-		this->send_end_signal();
 }
 
 void MAKNode::send_failed(int to)
