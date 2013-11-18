@@ -1,44 +1,43 @@
 #ifndef LISTENSERVER_H
 #define LISTENSERVER_H
-#include "../socket/ServerSocketEventListener.h"
-#include "../socket/ServerSocket.h"
-#include "../socket/SocketEventListener.h"
-#include "../socket/Socket.h"
-//#include "../node/LAKNode.h"
-//#include "../node/MaekawaNode.h"
-#include <vector>
+#include "../thread/Thread.h"
+#include "../thread/MutexLock.h"
+#include <linux/socket.h>
+#include <netinet/in.h>
+#include <pthread.h>
+#include <cstdlib>
+#include <unistd.h>
+#include <netdb.h>
+#define LSERVER_PORT 4567
+#define LSERVER_BUFFER_SIZE 1027
 using namespace std;
 
-class ListenServer: public ServerSocketEventListener, SocketEventListener
+enum ROLE{NODE,SWITCH};
+
+
+class ListenServer
 {
     public:
         ListenServer();
         virtual ~ListenServer();
-        int onAccept(Socket* socket);
-        int onReceive(char* message,Socket* socket);
-        int onDisconnect(Socket* socket);
-        int onDisconnect(ServerSocket* serversocket);
-        int init();
         int start();
-        int close();
-        bool end();
-        bool m_end;
+        //int close_me();
+        int set_end();
     protected:
     private:
-        Socket* m_accept_socket;
-        ServerSocket m_server_socket;
-        int m_port;
-        
-        
+        bool m_end;
+        int get_netid();
+        ROLE get_role(int netid);
+        MutexLock m_lock;
         class NodeThread: public Thread
         {
             public:
-                NodeThread(int node_id);
+                NodeThread(ListenServer* ls,int server_sock);
                 virtual int run();
-                int set_algorithm(int algorithm);
+                int disconnect();
             private:
-                int m_node_id;
-                Node* m_node;
+                ListenServer* m_ls;
+                int m_client_sock;
         };
         
         NodeThread* m_node_thread;

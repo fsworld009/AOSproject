@@ -1,5 +1,5 @@
 #include "ListenServer.h"
-#include <unistd.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -10,121 +10,74 @@ ListenServer::ListenServer()
 {
     m_end=false;
     //ctor
-    m_port=0;
-    //m_node_thread=0;
-    m_accept_socket=0;
+    //m_port=LSERVER_PORT;
 }
 
-bool ListenServer::end(){
+int ListenServer::set_end(){
+    m_lock.lock();
+    m_end = true;
+    m_lock.unlock();
 
-    return m_end;
-
-}
-
-int ListenServer::init(){
-        FILE* fp = fopen("./config/lserver.txt","r");
-
-        fscanf(fp,"%d",&m_port);
-        fclose(fp);
-        
 }
 
 int ListenServer::start(){
-    m_server_socket.init(m_port);
-    m_server_socket.registerEventListener(this);
-    cout << "ListenServer Start" << endl;
-    m_server_socket.start();
-    return 0;
-}
-
-int ListenServer::onAccept(Socket* socket){
-    //m_accept_socket.push_back(socket);
-    //if(m_accept_socket==0){
-        m_accept_socket = socket;
-    //}else{
-        //di
-    //}
-
-    socket->registerEventListener(this);
-    return 0;
-}
-
-int ListenServer::onReceive(char* message,Socket* socket){
-    //handle incoming message here
-    /*
-    case get switch id:
-    fork vswitch?
+    cout << "ListenServerewrew Start" << endl;
+    printf("Start listening server\n");
+    int netid = get_netid();
+    printf("My netid is %d\n",netid);
+    ROLE role = get_role(netid);
     
     
-    case get node id:
-    if(m_node_thread ==0){
-        m_node_thread = new NodeThread(node_id);
-    }
-    case get set_LAK algorithm signal:
-    m_node_thread->set_algorithm(0);
-    m_node_thread->start();
+    struct sockaddr_in server_addr/*, client_addr*/;
+	unsigned int server_sock, client_sock, ids;
+	int addr_len, port, net_status;
     
-    case get set_Maekawa algorithm signal:
-    m_node_thread->set_algorithm(1);
-    m_node_thread->start();
-     
-    m_node_thread = new Maekawa(node_id);
-    
+	port = LSERVER_PORT;
 
-    */
-    //test
-    if(strncmp(message,"DSWITCH",6)==0){
-        system("./dumpswitch.out");
-    }else if(strncmp(message,"NODE ",5)==0){
-        int nodeid=0,algorithm=0;
-        sscanf(message+5,"%d %d",&nodeid,&algorithm);
-        char buff[20];
-        sprintf(buff,"./node.out %d %d",nodeid,algorithm);
-        system(buff);
+    int option=1;
+    setsockopt(server_sock,SOL_SOCKET,SO_REUSEADDR,(char*)&option,sizeof(option));
+    server_sock= socket(AF_INET, SOCK_STREAM, 0);;
+	 
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_port = htons(port);
+	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	bind(server_sock, (struct sockaddr *)&server_addr, sizeof(server_addr));
+ 
+ 
+
+    //printf("here");
+    if (listen(server_sock, 100) != 0)
+	{
+		printf("Failed to listen to port %d", port);
+		return 1;
+	}else{
+        printf("ListenServer:: start to listen to port %d\n",port);
     }
     
-    return 0;
-}
-
-int ListenServer::onDisconnect(Socket* socket){
-    //m_accept_socket.removeElement(socket)
-    //delete socket;
-    return 0;
-}
-
-int ListenServer::onDisconnect(ServerSocket* serversocket){
-    return 0;
-}
-
-int ListenServer::close(){
-    m_server_socket.disconnect();
-
-    /*for(unsigned int i=0;i<m_accept_socket.size();i++){
-        m_accept_socket[i]->disconnect();
-        delete m_accept_socket[i];
+    sockaddr client_addr;
+    socklen_t client_len = sizeof(client_addr);
+    
+    //int client_sock;
+    m_lock.lock();
+    while(!m_end){
+        m_lock.unlock();
+        client_sock = accept(server_sock, &client_addr, &client_len);
+        printf("ListenServer:: accept connection\n");
+        m_node_thread = new NodeThread(this,client_sock);
+        m_node_thread->start();
+        m_lock.lock();
     }
-    m_accept_socket.clear();*/
-    if(m_accept_socket != 0){
-        m_accept_socket->disconnect();
-        delete m_accept_socket;
-        //m_accept_socket.close();
-    }
-
+    m_lock.unlock();
+    
     return 0;
-
 }
 
 ListenServer::~ListenServer()
 {
     //dtor
-    close();
+
 }
 /*
-ListenServer::NodeThread::NodeThread(int node_id){
-    m_node_id = node_id;
-    m_node=0;
-}
-
 int ListenServer::NodeThread::set_algorithm(int algorithm){
     if(m_node != 0){
         delete m_node;
@@ -140,10 +93,42 @@ int ListenServer::NodeThread::set_algorithm(int algorithm){
     }
     
 
+}*/
+
+int ListenServer::get_netid(){
+    int netid=0;
+    FILE *cmd=popen("uname -a | cut -d \" \" -f2","r"); //execute Linux command to get "netXX.utdallas.edu"
+    char result[50];
+    fgets(result, sizeof(result), cmd);
+    char num[3];
+    num[0]=result[3];
+    num[1]=result[4];
+    num[2]='\0';        //num="XX", XX is the net id
+    netid = atoi(num);  //convert the num string into int
+    pclose(cmd);
+    return netid;
+}
+
+ROLE ListenServer::get_role(int netid){
+    if(netid%5==0){
+        return SWITCH;
+    }else{
+        return NODE;
+    }
+}
+
+ListenServer::NodeThread::NodeThread(ListenServer* ls,int client_sock){
+    m_ls = ls;
+    m_client_sock = client_sock;
 }
 
 int ListenServer::NodeThread::run(){
-    m_node->init();
-    m_node->start();
     
-}*/
+    char buff[LSERVER_BUFFER_SIZE];
+    bzero(buff,LSERVER_BUFFER_SIZE);
+    recv(m_client_sock, buff, LSERVER_BUFFER_SIZE, 0);
+    cout << buff << endl;
+    //do stuff()
+    close(m_client_sock);
+    delete this;
+}
