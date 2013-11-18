@@ -29,6 +29,7 @@ class ListenServer
         int get_netid();
         ROLE get_role(int netid);
         MutexLock m_lock;
+        int m_server_sock;
         class NodeThread: public Thread
         {
             public:

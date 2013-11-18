@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <netdb.h>
+#include "../Socket/Socket.h"
 #define LSERVER_BUFFER_SIZE 1024
 #define LSERVER_PORT 4567
 
@@ -91,6 +92,9 @@ int main(int argc, char *argv[])
 	while(1)
 	{
 		client_sock = accept(server_sock, &client_addr, &client_len);
+        if(client_sock<0){
+            exit(0);
+        }
 		pid = fork();
         //printf("%d\n",pid);
 		if (pid > 0)
@@ -116,14 +120,30 @@ int main(int argc, char *argv[])
                         if(role==NODE){
                             char buff[30];
                             sprintf(buff,"./node.out %d %d",netid, algorithm);
-                            printf("%s\n",buff);
                             system(buff);
                         }else{
                             system("./switch");
                         }
                     }else if(strcmp(buff,"EXIT")==0){
                         //send an invalid msg to switch
+                        int switch_netid = 5*((netid/5)+1);
+                        Socket socket;
+                        char sad[100];
+                        if(switch_netid<-9){
+                            sprintf(sad,"net0%d.utdallas.edu",switch_netid);
+                        }else{
+                            sprintf(sad,"net%d.utdallas.edu",switch_netid);
+                        }
+                        socket.connectHost(sad,6789);
+                        char msg[10];
+                        msg[0] = 46;
+                        socket.send(msg);
+                        
+                        socket.disconnect();
+                        
+                        shutdown(client_sock,SHUT_RDWR);
                         close(client_sock);
+                        shutdown(server_sock,SHUT_RDWR);
                         close(server_sock);
                         return 0;
                     }

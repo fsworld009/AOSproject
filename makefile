@@ -5,7 +5,7 @@ n:
 	g++ ./node/*.cpp ./socket/*.cpp ./thread/*.cpp -pthread -o node.out
 
 ls:
-	g++ ./listenserver/*.cpp -pthread -o listenserver.out
+	g++ ./listenserver/*.cpp ./socket/*.cpp ./thread/*.cpp -pthread -o listenserver.out
 
 ls2:
 	g++ ./listenserver_old/*.cpp -pthread ./socket/*.cpp ./thread/*.cpp -pthread -o listenserver_old.out

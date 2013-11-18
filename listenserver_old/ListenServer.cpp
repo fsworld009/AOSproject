@@ -9,14 +9,18 @@ using namespace std;
 ListenServer::ListenServer()
 {
     m_end=false;
+    
     //ctor
     //m_port=LSERVER_PORT;
 }
 
 int ListenServer::set_end(){
-    m_lock.lock();
+    //m_lock.lock();
+    printf("called\n");
     m_end = true;
-    m_lock.unlock();
+    shutdown(m_server_sock,SHUT_RDWR);
+    close(m_server_sock);
+    //m_lock.unlock();
 
 }
 
@@ -58,16 +62,19 @@ int ListenServer::start(){
     socklen_t client_len = sizeof(client_addr);
     
     //int client_sock;
-    m_lock.lock();
+    m_server_sock = server_sock;
+    //m_lock.lock();
     while(!m_end){
-        m_lock.unlock();
+        //m_lock.unlock();
         client_sock = accept(server_sock, &client_addr, &client_len);
         printf("ListenServer:: accept connection\n");
-        m_node_thread = new NodeThread(this,client_sock);
-        m_node_thread->start();
-        m_lock.lock();
+        if(client_sock>0){
+            m_node_thread = new NodeThread(this,client_sock);
+            m_node_thread->start();
+        }
+        //m_lock.lock();
     }
-    m_lock.unlock();
+    //m_lock.unlock();
     
     return 0;
 }
@@ -128,6 +135,9 @@ int ListenServer::NodeThread::run(){
     bzero(buff,LSERVER_BUFFER_SIZE);
     recv(m_client_sock, buff, LSERVER_BUFFER_SIZE, 0);
     cout << buff << endl;
+    if(strncmp(buff,"EXIT",4)==0){
+        m_ls->set_end();
+    }
     //do stuff()
     close(m_client_sock);
     delete this;
