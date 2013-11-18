@@ -204,7 +204,7 @@ int forward (char* msg, char* to_addr, int port)
 		return 3;
 	}
 	
-	usleep(100);
+	
 	close(sockfd);
 	return 0;
 }
@@ -716,7 +716,7 @@ void term_wait(int num_nodes, unsigned int server_sock)
 		
 		count ++;
 		cout << count << " / " << num_nodes << endl;
-		usleep(1000);
+		
 		close(client_sock);
 		
 	}
@@ -736,7 +736,7 @@ unsigned int term_listen(int aport)
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	bind(server_sock, (struct sockaddr *)&server_addr, sizeof(server_addr));
 	
-	if (listen(server_sock, 50) != 0)
+	if (listen(server_sock, 1024) != 0)
 	{
 		cout << "Failed to listen to port: " << port << endl;
 	}

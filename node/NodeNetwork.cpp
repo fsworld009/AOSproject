@@ -416,7 +416,7 @@ int NodeNetwork::AcceptThread::run(){
                     m_parent->m_node->receive(msg_string);
                 }
             }
-            usleep(1000);
+            //usleep(1000);
             close(accept_socket);
 
 

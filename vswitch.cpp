@@ -48,7 +48,7 @@ int forward (char* msg, char* to_addr, int aport)
 		return 3;
 	}
 	
-	usleep(1000);
+	
 	close(sockfd);
 	return 0;
 }
@@ -90,12 +90,12 @@ void handle( unsigned int client_sock, int net_status, int aport)
 		int msg_length = recv(client_sock, buffer, 1024, 0);
 		if( msg_length == 0 )
 		{
-			cout << "Peer Shutdown" << endl;
+			printf("Peer Shutdown %d\n", node_num);
 			break;
 		}
 		if( msg_length == -1)
 		{
-			cout << "Error receiving message" <<endl;
+			printf("Error receiving message %d\n", node_num);
 			break;
 		}
 		
@@ -107,6 +107,7 @@ void handle( unsigned int client_sock, int net_status, int aport)
 		}
 		
 		unsigned int t = buffer[0] & 0xff;
+		printf("Message from %d to %d\n", node_num, t);
 		log_file << buffer << endl;
 		log_file << msg_length << endl;
 		
@@ -144,6 +145,7 @@ void handle( unsigned int client_sock, int net_status, int aport)
 		}
 		
 		int temp = forward(buffer, to_addr, aport);
+		printf("Returned: %d\n", temp);
 		send(client_sock, &temp, 4, 0);
 	}
 
