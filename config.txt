@@ -27,7 +27,9 @@ res_alloc_time=0:0:5
 request_start
 
 #(node,minutes:seconds:milliseconds)
-
-#(4,0:0:40)
+(1,0:0:10)
+(2,0:0:15)
+(3,0:0:15)
+(4,0:0:20)
 #request_end indicates the end of the list of request times
 request_end

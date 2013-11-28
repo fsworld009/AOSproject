@@ -183,6 +183,7 @@ int Socket::SendThread::run(){
 
                 m_parent->m_messages.pop();
                 result = write(m_parent->m_socket,msg,SOCKET_MAX_BUFFER_SIZE);
+                usleep(1000);
                 if(result ==-1 || result == 0){
                     //cout << "Socket: send thread close" << endl;
                     m_parent->disconnect();

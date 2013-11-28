@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
                         }
                     }else if(strcmp(buff,"EXIT")==0){
                         //send an invalid msg to switch
-                        int switch_netid = 5*((netid/5)+1);
+                        /*int switch_netid = 5*((netid/5)+1);
                         Socket socket;
                         char sad[100];
                         if(switch_netid<-9){
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
                         msg[0] = 46;
                         socket.send(msg);
                         
-                        socket.disconnect();
+                        socket.disconnect();*/
                         
                         shutdown(client_sock,SHUT_RDWR);
                         close(client_sock);

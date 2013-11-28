@@ -130,10 +130,15 @@ void handle( unsigned int client_sock, int net_status, int aport)
 		}
 		
 		
-		if (t > 45 || t == 0) //If "To" is invalid, exit
+		if (t == 46) //If "To" is invalid, exit
 		{
 			send(client_sock, "0", 1, 0); // 0 means no problem, there's never a problem exiting
 			break;
+		}
+		else if( t > 45 || t== 0 )
+		{
+			send(client_sock, "0", 1, 0);
+			continue;
 		}
 		else if (t < 10) //format "To" Hostname
 		{

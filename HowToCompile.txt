@@ -1,0 +1,19 @@
+command
+
+Compile nodes
+make n
+
+Compile listen server
+make ls
+
+Compile testbed
+make tb
+
+Compile vswitch
+make sw
+
+output:
+./listenserver.out
+./testbed
+./vswitch
+./node.out

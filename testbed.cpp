@@ -569,7 +569,7 @@ data* get_results(int num_nodes)
 	for( int x = 1; x<= num_nodes; x++)
 	{
 		char fname[10];
-		char buffer[1024];
+		string buffer;
 		
 		if( trans[x] < 10)
 		{
@@ -588,40 +588,43 @@ data* get_results(int num_nodes)
 			continue;
 		}
 		cout << "Opened " << fname << endl;
-		ifile >> buffer;
+		string clen;
+		getline(ifile, buffer);
 		
 		while( ! ifile.eof())
 		{
-			ifile >> temp_length;
+			getline(ifile, clen);
+			temp_length = strtol(clen.c_str(), NULL, 10);
 			//printf("Buffer[0] = %x\n", buffer[0]);
 			if( (buffer[0] & 0xff) != 255) //only reading control messages
 			{
 				d->msg_count ++;
 				total_length += temp_length;
-				ifile >> buffer;
-				//cout << "Not a control Message" << endl;
+				getline(ifile, buffer);
+				cout << "Not a control Message" << endl;
 				continue;
 			}
 			
 			if( buffer[1] == '3') //make this message- requesting cs
 			{
-				//cout << "Requesting CS..." << endl;
+				cout << "Requesting CS..." << endl;
 				current->node = trans[x];
 				memcpy( &(current->requested) , &(buffer[2]) , sizeof(long)); //change all times to longs
 			}
 			else
 			{
-				ifile >> buffer;
+				getline(ifile, buffer);
 				continue;
 			}
 			
 			ifile >> buffer;
 			while( (buffer[0] & 0xff) != 255 && ! ifile.eof()) //looking for entering CS
 			{
-				ifile >> temp_length;
+				getline(ifile, clen);
+				temp_length = strtol(clen.c_str(), NULL, 10);
 				d->msg_count ++;
-				ifile >> buffer;
-				//cout << "Not a control Message" << endl;
+				getline(ifile, buffer);
+				cout << "Not a control Message" << endl;
 			}
 			
 			if( ifile.eof() || buffer[1] != '1' ) //we reach eof before finding CS enter 
@@ -632,20 +635,21 @@ data* get_results(int num_nodes)
 				current->next->prev = current;
 				
 				current = current->next;
-				ifile >> buffer;
+				getline(ifile, buffer);
 				continue;
 			}
 			
 			memcpy( &(current->started), &(buffer[2]), sizeof(long));
-			//cout << "Entering CS " << current->started << endl;
+			cout << "Entering CS " << current->started << endl;
 			
-			ifile >> buffer;
+			getline(ifile, buffer);
 			while( (buffer[0] & 0xff) != 255 && ! ifile.eof()) //looking for leaving CS
 			{
-				ifile >> temp_length;
+				getline(ifile, clen);
+				temp_length = strtol(clen.c_str(), NULL, 10);
 				count ++;
-				ifile >> buffer;
-				//cout << "Not a control Message" << endl;
+				getline(ifile, buffer);
+				cout << "Not a control Message" << endl;
 			}
 			
 			if( ifile.eof() || buffer[1] != '2' ) //we reach eof before finding CS finish 
@@ -656,18 +660,18 @@ data* get_results(int num_nodes)
 				current->next->prev = current;
 				
 				current = current->next;
-				ifile >> buffer;
+				getline(ifile, buffer);
 				continue;
 			}
 			
 			memcpy( &(current->finished), &(buffer[2]), sizeof(long));
-			//cout << "Leaving CS " << current->finished << endl;
+			cout << "Leaving CS " << current->finished << endl;
 			current-> next = (crit_sec*) malloc(sizeof(crit_sec));
 			memset( current->next, 0x00, sizeof(crit_sec));
 			current->next->prev = current;
 			
 			current = current->next;
-			ifile >> buffer;
+			getline(ifile, buffer);
 		}
 		//cout << "Reached EOF" << endl;
 		

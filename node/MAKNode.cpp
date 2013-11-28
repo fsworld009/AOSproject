@@ -40,7 +40,7 @@ int MAKNode::run()
     //}
 
 	//while (!done_all_request() || !recv_end_signal())
-    while(timer< 1000)
+    while(timer< 60000)
 	{
 	        //handle receive messages
         while(get_message(&recv_message))
